@@ -27,13 +27,14 @@ type ObjectEntity interface {
 
 // Object 表示对一个对象的引用
 type Object interface {
-	Exists() bool
+	Exists() (bool, error)
 	GetDownloadURL() string
-	GetMeta() *ObjectMeta
+	GetMeta() (*ObjectMeta, error)
 	GetName() string
 	UpdateMeta(meta *ObjectMeta) error
 	GetEntity() (ObjectEntity, error)
 	PutEntity(entity ObjectEntity, meta *ObjectMeta) error
+	PutFile(file fs.Path, meta *ObjectMeta) error
 }
 
 ////////////////////////////////////////////////////////////////////////////////

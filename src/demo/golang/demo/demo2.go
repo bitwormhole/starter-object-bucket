@@ -1,7 +1,6 @@
 package demo
 
 import (
-	"encoding/json"
 	"strings"
 
 	"github.com/bitwormhole/starter-object-bucket/buckets"
@@ -13,9 +12,9 @@ import (
 	"github.com/bitwormhole/starter/vlog"
 )
 
-// Demo1 测试功能是否正常
-type Demo1 struct {
-	markup.Component `id:"demo1"`
+// Demo2 测试大文件上传速度
+type Demo2 struct {
+	markup.Component `id:"demo2"`
 
 	DemoBuckets        string              `inject:"${demo.buckets}"`
 	CredentialFileName string              `inject:"${demo.credential.properties}"`
@@ -26,12 +25,12 @@ type Demo1 struct {
 	exampleFileLocal core.TempFile
 }
 
-func (inst *Demo1) _Impl() application.LifeRegistry {
+func (inst *Demo2) _Impl() application.LifeRegistry {
 	return inst
 }
 
 // GetLifeRegistration ...
-func (inst *Demo1) GetLifeRegistration() *application.LifeRegistration {
+func (inst *Demo2) GetLifeRegistration() *application.LifeRegistration {
 	lr := &application.LifeRegistration{}
 	lr.OnInit = inst.Init
 	lr.Looper = inst
@@ -39,7 +38,7 @@ func (inst *Demo1) GetLifeRegistration() *application.LifeRegistration {
 }
 
 // Init ...
-func (inst *Demo1) Init() error {
+func (inst *Demo2) Init() error {
 
 	err := inst.initExampleData()
 	if err != nil {
@@ -49,7 +48,7 @@ func (inst *Demo1) Init() error {
 	return inst.load()
 }
 
-func (inst *Demo1) initExampleData() error {
+func (inst *Demo2) initExampleData() error {
 
 	tmp := core.GetTempFileManager().NewTempFile()
 
@@ -57,11 +56,11 @@ func (inst *Demo1) initExampleData() error {
 	inst.exampleFileName = "test/demo/object1-" + tmp.GetPath().Name()
 
 	mk := ExampleFileMaker{}
-	mk.Init(1024*32, "hello")
+	mk.Init(1024*1024*32, "hello")
 	return mk.Make(tmp.GetPath())
 }
 
-func (inst *Demo1) load() error {
+func (inst *Demo2) load() error {
 
 	file := fs.Default().GetPath(inst.CredentialFileName)
 	text, err := file.GetIO().ReadText(nil)
@@ -80,7 +79,7 @@ func (inst *Demo1) load() error {
 }
 
 // Loop ...
-func (inst *Demo1) Loop() error {
+func (inst *Demo2) Loop() error {
 
 	vlog.Warn("todo: loop")
 
@@ -99,7 +98,7 @@ func (inst *Demo1) Loop() error {
 	return nil
 }
 
-func (inst *Demo1) testBucket(b *buckets.Bucket) error {
+func (inst *Demo2) testBucket(b *buckets.Bucket) error {
 
 	driver, err := inst.BM.FindDriver(b.Driver)
 	if err != nil {
@@ -141,56 +140,10 @@ func (inst *Demo1) testBucket(b *buckets.Bucket) error {
 		return err
 	}
 
-	return inst.testObject(o)
-}
-
-func (inst *Demo1) testObject(o buckets.Object) error {
-
-	const tab = "    "
-
-	// Exists
-	ext, err := o.Exists()
-	if err != nil {
-		return err
-	}
-	vlog.Info(tab+"o.exists=", ext)
-
-	// GetMeta
-	meta, err := o.GetMeta()
-	if err != nil {
-		return err
-	}
-	vlog.Info(tab+"o.meta=", inst.stringifyMeta(meta))
-
-	// GetDownloadURL
-	url := o.GetDownloadURL()
-	vlog.Info(tab+"o.dl_url=", url)
-
-	// GetDownloadURL
-	name := o.GetName()
-	vlog.Info(tab+"o.name=", name)
-
-	// o.GetEntity()
-
-	// UpdateMeta
-	err = o.UpdateMeta(meta)
-	if err != nil {
-		vlog.Warn("UpdateMeta:error:", err)
-		// return err
-	}
-
 	return nil
 }
 
-func (inst *Demo1) stringifyMeta(meta *buckets.ObjectMeta) string {
-	j, err := json.MarshalIndent(meta, "", "    ")
-	if err != nil {
-		return "[error]"
-	}
-	return string(j)
-}
-
-func (inst *Demo1) loadBuckets() ([]*buckets.Bucket, error) {
+func (inst *Demo2) loadBuckets() ([]*buckets.Bucket, error) {
 	dst := make([]*buckets.Bucket, 0)
 	items := strings.Split(inst.DemoBuckets, ",")
 	for _, item := range items {
@@ -203,7 +156,7 @@ func (inst *Demo1) loadBuckets() ([]*buckets.Bucket, error) {
 	return dst, nil
 }
 
-func (inst *Demo1) loadBucketWithName(name string) (*buckets.Bucket, error) {
+func (inst *Demo2) loadBucketWithName(name string) (*buckets.Bucket, error) {
 
 	name = strings.TrimSpace(name)
 

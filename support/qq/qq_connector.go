@@ -1,8 +1,6 @@
 package qq
 
 import (
-	"errors"
-
 	"github.com/bitwormhole/starter-object-bucket/buckets"
 )
 
@@ -14,6 +12,10 @@ func (inst *cosConnector) _Impl() buckets.Connector {
 }
 
 func (inst *cosConnector) Open(b *buckets.Bucket) (buckets.Connection, error) {
-
-	return nil, errors.New("no impl")
+	b2 := &cosBucket{}
+	err := b2.init(b)
+	if err != nil {
+		return nil, err
+	}
+	return b2, nil
 }

@@ -39,8 +39,8 @@ func (inst *OSSDriver) ListDrivers() []*buckets.DriverRegistration {
 // GetBucket ...
 func (inst *OSSDriver) GetBucket(tag, id string, p collection.Properties) (*buckets.Bucket, error) {
 	ldr := core.BucketLoader{}
-	ldr.WantBucketExt = []string{BucketEndpoint, BucketName}
-	ldr.WantCredentialExt = []string{BucketAccessKeyID, BucketAccessKeySecret}
+	ldr.WantBucketExt = []string{pBucketEndpoint, pBucketName}
+	ldr.WantCredentialExt = []string{pAccessKeyID, pAccessKeySecret}
 	return ldr.Load(tag, id, p)
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/tencentyun/cos-go-sdk-v5"
 )
 
+// COSDriver ...
 type COSDriver struct {
 	markup.Component `class:"buckets.Driver" initMethod:"Init"`
 
@@ -19,10 +20,12 @@ func (inst *COSDriver) _Impl() (buckets.DriverRegistry, buckets.Driver) {
 	return inst, inst
 }
 
+// Init ...
 func (inst *COSDriver) Init() error {
 	return nil
 }
 
+// ListDrivers ...
 func (inst *COSDriver) ListDrivers() []*buckets.DriverRegistration {
 
 	vlog.Info("qq.cos.version=", cos.Version)
@@ -33,10 +36,15 @@ func (inst *COSDriver) ListDrivers() []*buckets.DriverRegistration {
 	return []*buckets.DriverRegistration{dr}
 }
 
-func (inst *COSDriver) GetBucket(tag, name string, p collection.Properties) (*buckets.Bucket, error) {
-	return core.LoadBucketParams(tag, name, p)
+// GetBucket ...
+func (inst *COSDriver) GetBucket(tag, id string, p collection.Properties) (*buckets.Bucket, error) {
+	ldr := core.BucketLoader{}
+	ldr.WantBucketExt = []string{pBucketEndpoint, pBucketName, pServiceURL, pBucketURL}
+	ldr.WantCredentialExt = []string{pBucketAK, pBucketSK}
+	return ldr.Load(tag, id, p)
 }
 
+// GetConnector ...
 func (inst *COSDriver) GetConnector() buckets.Connector {
 	return &inst.connector
 }

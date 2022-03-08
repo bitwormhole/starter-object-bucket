@@ -12,10 +12,28 @@ import (
 
 type pComDemo1 struct {
 	instance *demo0xbcc745.Demo1
-	 markup0x23084a.Component `class:"life" initMethod:"Init"`
+	 markup0x23084a.Component `id:"demo1"`
 	DemoBuckets string `inject:"${demo.buckets}"`
 	CredentialFileName string `inject:"${demo.credential.properties}"`
 	Context application0x67f6c5.Context `inject:"context"`
 	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
+}
+
+
+type pComDemo2 struct {
+	instance *demo0xbcc745.Demo2
+	 markup0x23084a.Component `id:"demo2"`
+	DemoBuckets string `inject:"${demo.buckets}"`
+	CredentialFileName string `inject:"${demo.credential.properties}"`
+	Context application0x67f6c5.Context `inject:"context"`
+	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
+}
+
+
+type pComDemoRunner struct {
+	instance *demo0xbcc745.DemoRunner
+	 markup0x23084a.Component `class:"life"`
+	Demo1 *demo0xbcc745.Demo1 `inject:"#demo1"`
+	Demo2 *demo0xbcc745.Demo2 `inject:"#demo2"`
 }
 

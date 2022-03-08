@@ -42,6 +42,9 @@ func (inst *OBSDriver) GetConnector() buckets.Connector {
 }
 
 // GetBucket ...
-func (inst *OBSDriver) GetBucket(tag, name string, p collection.Properties) (*buckets.Bucket, error) {
-	return core.LoadBucketParams(tag, name, p)
+func (inst *OBSDriver) GetBucket(tag, id string, p collection.Properties) (*buckets.Bucket, error) {
+	ldr := core.BucketLoader{}
+	ldr.WantBucketExt = []string{pBucketEndpoint, pBucketName}
+	ldr.WantCredentialExt = []string{pBucketAK, pBucketSK}
+	return ldr.Load(tag, id, p)
 }
