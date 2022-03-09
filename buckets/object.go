@@ -35,6 +35,7 @@ type Object interface {
 	GetEntity() (ObjectEntity, error)
 	PutEntity(entity ObjectEntity, meta *ObjectMeta) error
 	PutFile(file fs.Path, meta *ObjectMeta) error
+	// GetFile(saveAs fs.Path) error
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -2,11 +2,15 @@ package aliyun
 
 import (
 	"errors"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/bitwormhole/starter-object-bucket/buckets"
 	"github.com/bitwormhole/starter-object-bucket/support/core"
 	"github.com/bitwormhole/starter/io/fs"
+	"github.com/bitwormhole/starter/util"
 )
 
 // OSS 的扩展参数
@@ -16,6 +20,7 @@ const (
 
 	pBucketName     = "bucket"
 	pBucketEndpoint = "endpoint"
+	pBucketBaseURL  = "url"
 
 	// for 凭证
 
@@ -32,9 +37,10 @@ const (
 ////////////////////////////////////////////////////////////////////////////////
 
 type ossBucketConnection struct {
-	bucketName string
-	client     *oss.Client
-	bucket     *oss.Bucket
+	bucketName   string
+	client       *oss.Client
+	bucket       *oss.Bucket
+	fetchBaseURL string
 }
 
 func (inst *ossBucketConnection) _Impl() buckets.Connection {
@@ -48,6 +54,7 @@ func (inst *ossBucketConnection) init(b *buckets.Bucket) error {
 	akeyID := ext[pAccessKeyID]
 	akeySecret := ext[pAccessKeySecret]
 	bucketName := ext[pBucketName]
+	bucketURL := b.URL
 
 	client, err := oss.New(endpoint, akeyID, akeySecret)
 	if err != nil {
@@ -62,6 +69,7 @@ func (inst *ossBucketConnection) init(b *buckets.Bucket) error {
 	inst.bucketName = bucketName
 	inst.client = client
 	inst.bucket = bucket
+	inst.fetchBaseURL = bucketURL
 	return nil
 }
 
@@ -104,23 +112,59 @@ func (inst *ossObject) _Impl() buckets.Object {
 }
 
 func (inst *ossObject) Exists() (bool, error) {
-	return false, errors.New("no impl")
+	return inst.parent.bucket.IsObjectExist(inst.name)
 }
 
 func (inst *ossObject) GetDownloadURL() string {
-	return ""
-}
-
-func (inst *ossObject) GetMeta() (*buckets.ObjectMeta, error) {
-	return nil, errors.New("no impl")
+	p1 := inst.parent.fetchBaseURL
+	p2 := inst.name
+	return core.ComputeDownloadURL(p1, p2)
 }
 
 func (inst *ossObject) GetName() string {
-	return ""
+	return inst.name
+}
+
+func (inst *ossObject) GetMeta() (*buckets.ObjectMeta, error) {
+	bucket := inst.parent.bucket
+	name := inst.name
+	dst := map[string]string{}
+	src, err := bucket.GetObjectDetailedMeta(name)
+	if err != nil {
+		return nil, err
+	}
+	for k := range src {
+		k2 := strings.ToLower(k)
+		dst[k2] = src.Get(k)
+	}
+	date, _ := time.Parse(time.RFC1123, dst["date"])
+	size, _ := strconv.ParseInt(dst["content-length"], 10, 64)
+	md5sum := util.Base64FromString(dst["content-md5"])
+	meta := &buckets.ObjectMeta{}
+	meta.More = dst
+	meta.ContentType = dst["content-type"]
+	meta.Hash = md5sum.HexString().String()
+	meta.HashAlgorithm = "MD5"
+	meta.Size = size
+	meta.Date = date
+	return meta, nil
 }
 
 func (inst *ossObject) UpdateMeta(meta *buckets.ObjectMeta) error {
-	return errors.New("no impl")
+	if meta == nil {
+		return nil
+	}
+	src := meta.More
+	if src == nil {
+		return nil
+	}
+	options := []oss.Option{}
+	for k, v := range src {
+		item := oss.Meta(k, v)
+		options = append(options, item)
+	}
+	bucket := inst.parent.bucket
+	return bucket.SetObjectMeta(inst.name, options...)
 }
 
 func (inst *ossObject) GetEntity() (buckets.ObjectEntity, error) {
