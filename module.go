@@ -12,8 +12,8 @@ import (
 
 const (
 	theModuleName     = "github.com/bitwormhole/starter-object-bucket"
-	theModuleVersion  = "v0.1.0"
-	theModuleRevision = 1
+	theModuleVersion  = "v0.1.1"
+	theModuleRevision = 2
 )
 
 ////////////////////////////////////////////////////////////////////////////////
