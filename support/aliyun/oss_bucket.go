@@ -2,6 +2,8 @@ package aliyun
 
 import (
 	"errors"
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -37,10 +39,13 @@ const (
 ////////////////////////////////////////////////////////////////////////////////
 
 type ossBucketConnection struct {
-	bucketName   string
-	client       *oss.Client
-	bucket       *oss.Bucket
-	fetchBaseURL string
+	bucketName      string
+	client          *oss.Client
+	bucket          *oss.Bucket
+	fetchBaseURL    string
+	dnSet           core.BucketDNSet
+	accessKeyID     string
+	accessKeySecret string
 }
 
 func (inst *ossBucketConnection) _Impl() buckets.Connection {
@@ -70,6 +75,9 @@ func (inst *ossBucketConnection) init(b *buckets.Bucket) error {
 	inst.client = client
 	inst.bucket = bucket
 	inst.fetchBaseURL = bucketURL
+	inst.accessKeyID = akeyID
+	inst.accessKeySecret = akeySecret
+	inst.dnSet.Init(ext)
 	return nil
 }
 
@@ -98,6 +106,14 @@ func (inst *ossBucketConnection) GetObject(name string) buckets.Object {
 		name:   name,
 	}
 	return o
+}
+
+func (inst *ossBucketConnection) GetBucketName() string {
+	return inst.bucketName
+}
+
+func (inst *ossBucketConnection) GetDomainName(dntype buckets.DomainType) (string, error) {
+	return inst.dnSet.GetDN(dntype)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -214,6 +230,143 @@ func (inst *ossObject) getUploader(entity buckets.ObjectEntity) uploader {
 	}
 	return &largeUploader{object: inst}
 }
+
+func (inst *ossObject) UploadByAPI(up1 *buckets.HTTPUploading) (*buckets.HTTPUploading, error) {
+
+	// 准备返回值
+	up2 := &buckets.HTTPUploading{}
+	headers2 := make(map[string]string)
+	if up1 == nil {
+		up1 = up2
+	} else {
+		*up2 = *up1
+	}
+	headers1 := up1.RequestHeaders
+	for k, v := range headers1 {
+		k2 := strings.ToLower(k)
+		headers2[k2] = v
+	}
+
+	// 检查各个字段
+	method := http.MethodPut
+	path := inst.name
+	contentType := up2.ContentType
+	md5sum := up2.ContentMD5.String()
+	length := up2.ContentLength
+	dn, _ := inst.parent.dnSet.GetDN(up2.Domain)
+
+	if length < 0 {
+		length = 0
+	}
+
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
+	// 写入 headers2
+	options := []oss.Option{}
+	options = append(options, oss.ContentType(contentType))
+	headers2["content-type"] = contentType
+
+	if md5sum != "" {
+		options = append(options, oss.ContentMD5(md5sum))
+	}
+
+	if length > 0 {
+		options = append(options, oss.ContentLength(length))
+	}
+
+	// 生成 URL
+	url1, err := inst.parent.bucket.SignURL(path, oss.HTTPPut, 60, options...)
+	if err != nil {
+		return nil, err
+	}
+
+	url2, err := url.Parse(url1)
+	if err != nil {
+		return nil, err
+	}
+
+	if dn != "" {
+		url2.Host = dn
+	}
+
+	if up1.UseHTTPS {
+		url2.Scheme = "https"
+	}
+
+	up2.Method = method
+	up2.URL = url2.String()
+	up2.RequestHeaders = headers2
+	up2.ContentLength = length
+	up2.ContentMD5 = up1.ContentMD5
+	up2.ContentType = contentType
+	return up2, nil
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// type authorizationBuilder struct {
+// 	VERB                    string // aka. HTTP.Method
+// 	ContentMD5              string
+// 	ContentType             string
+// 	Date                    string
+// 	CanonicalizedOSSHeaders string
+// 	CanonicalizedResource   string
+
+// 	AccessKeyId     string
+// 	AccessKeySecret string
+// }
+
+// func (inst *authorizationBuilder) Create() string {
+
+// 	const nl = ""
+// 	aKeySecret := []byte(inst.AccessKeySecret)
+// 	aKeyID := inst.AccessKeyId
+
+// 	// 组装 value
+// 	builder := strings.Builder{}
+// 	builder.WriteString(inst.VERB)
+// 	builder.WriteString(nl)
+
+// 	builder.WriteString(inst.ContentMD5)
+// 	builder.WriteString(nl)
+
+// 	builder.WriteString(inst.ContentType)
+// 	builder.WriteString(nl)
+
+// 	builder.WriteString(inst.Date)
+// 	builder.WriteString(nl)
+
+// 	builder.WriteString(inst.CanonicalizedOSSHeaders)
+// 	builder.WriteString(inst.CanonicalizedResource)
+// 	value := builder.String()
+
+// 	// 计算 hmac-sha1
+// 	mac := hmac.New(sha1.New, aKeySecret)
+// 	mac.Write([]byte(value))
+// 	sum := mac.Sum(nil)
+
+// 	// 生成签名
+// 	signature := util.Base64FromBytes(sum)
+// 	return "OSS " + aKeyID + ":" + signature.String()
+// }
+
+// func (inst *authorizationBuilder) init(bucketName, objectName string) {
+// 	inst.ContentType = "application/octet-stream"
+// 	inst.initCanonicalizedResource(bucketName, objectName)
+// 	inst.initDate()
+// }
+
+// func (inst *authorizationBuilder) initCanonicalizedResource(bucketName, objectName string) {
+// 	inst.CanonicalizedResource = "/" + bucketName + "/" + objectName
+// }
+
+// func (inst *authorizationBuilder) initDate() {
+// 	now := time.Now()
+// 	zone := time.FixedZone("GMT", 0)
+// 	inst.Date = now.In(zone).Format(time.RFC1123)
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 

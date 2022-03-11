@@ -39,7 +39,18 @@ func (inst *OSSDriver) ListDrivers() []*buckets.DriverRegistration {
 // GetBucket ...
 func (inst *OSSDriver) GetBucket(tag, id string, p collection.Properties) (*buckets.Bucket, error) {
 	ldr := core.BucketLoader{}
-	ldr.WantBucketExt = []string{pBucketEndpoint, pBucketName}
+	ldr.WantBucketExt = []string{pBucketEndpoint, pBucketName,
+		string(buckets.BucketAcc),
+		string(buckets.BucketCustomer),
+		string(buckets.BucketInternal),
+		string(buckets.BucketPublic),
+		string(buckets.BucketVPC),
+		string(buckets.EndpointAcc),
+		string(buckets.EndpointCustomer),
+		string(buckets.EndpointInternal),
+		string(buckets.EndpointPublic),
+		string(buckets.EndpointVPC),
+	}
 	ldr.WantCredentialExt = []string{pAccessKeyID, pAccessKeySecret}
 	return ldr.Load(tag, id, p)
 }

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bitwormhole/starter/io/fs"
+	"github.com/bitwormhole/starter/util"
 )
 
 // ObjectMeta 表示对象的元数据
@@ -17,6 +18,18 @@ type ObjectMeta struct {
 	HashAlgorithm string
 	ContentType   string
 	More          map[string]string
+}
+
+// Uploading
+type HTTPUploading struct {
+	UseHTTPS       bool
+	Domain         DomainType
+	Method         string
+	URL            string
+	ContentType    string
+	ContentLength  int64
+	ContentMD5     util.Hex
+	RequestHeaders map[string]string
 }
 
 // ObjectEntity 表示对象的实体
@@ -36,6 +49,11 @@ type Object interface {
 	PutEntity(entity ObjectEntity, meta *ObjectMeta) error
 	PutFile(file fs.Path, meta *ObjectMeta) error
 	// GetFile(saveAs fs.Path) error
+
+	// UploadByAPI 准备上传参数;
+	// 输入：待准备的参数;
+	// 输出：已经准备好的参数;
+	UploadByAPI(up *HTTPUploading) (*HTTPUploading, error)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

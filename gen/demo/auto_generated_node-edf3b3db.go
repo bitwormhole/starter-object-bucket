@@ -20,9 +20,18 @@ type pComDemo1 struct {
 }
 
 
-type pComDemo2 struct {
-	instance *demo0xbcc745.Demo2
-	 markup0x23084a.Component `id:"demo2"`
+type pComDemoRunner struct {
+	instance *demo0xbcc745.DemoRunner
+	 markup0x23084a.Component `class:"life"`
+	Demo1 *demo0xbcc745.Demo1 `inject:"#demo1"`
+	Demo2 *demo0xbcc745.Demo2 `inject:"#demo2"`
+	Demo3 *demo0xbcc745.Demo3 `inject:"#demo3"`
+}
+
+
+type pComDemo3 struct {
+	instance *demo0xbcc745.Demo3
+	 markup0x23084a.Component `id:"demo3"`
 	DemoBuckets string `inject:"${demo.buckets}"`
 	CredentialFileName string `inject:"${demo.credential.properties}"`
 	Context application0x67f6c5.Context `inject:"context"`
@@ -30,10 +39,12 @@ type pComDemo2 struct {
 }
 
 
-type pComDemoRunner struct {
-	instance *demo0xbcc745.DemoRunner
-	 markup0x23084a.Component `class:"life"`
-	Demo1 *demo0xbcc745.Demo1 `inject:"#demo1"`
-	Demo2 *demo0xbcc745.Demo2 `inject:"#demo2"`
+type pComDemo2 struct {
+	instance *demo0xbcc745.Demo2
+	 markup0x23084a.Component `id:"demo2"`
+	DemoBuckets string `inject:"${demo.buckets}"`
+	CredentialFileName string `inject:"${demo.credential.properties}"`
+	Context application0x67f6c5.Context `inject:"context"`
+	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
 }
 

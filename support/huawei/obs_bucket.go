@@ -77,6 +77,14 @@ func (inst *obsBucket) GetObject(name string) buckets.Object {
 	return o
 }
 
+func (inst *obsBucket) GetBucketName() string {
+	return inst.bucketName
+}
+
+func (inst *obsBucket) GetDomainName(dntype buckets.DomainType) (string, error) {
+	return "", errors.New("no impl")
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 type obsObject struct {
@@ -164,6 +172,10 @@ func (inst *obsObject) getUploader(entity buckets.ObjectEntity) uploader {
 		return &middleUploader{object: inst}
 	}
 	return &largeUploader{object: inst}
+}
+
+func (inst *obsObject) UploadByAPI(up *buckets.HTTPUploading) (*buckets.HTTPUploading, error) {
+	return nil, errors.New("no impl")
 }
 
 ////////////////////////////////////////////////////////////////////////////////

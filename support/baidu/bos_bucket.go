@@ -85,6 +85,14 @@ func (inst *bosBucket) GetObject(name string) buckets.Object {
 	return o
 }
 
+func (inst *bosBucket) GetBucketName() string {
+	return inst.bucketName
+}
+
+func (inst *bosBucket) GetDomainName(dntype buckets.DomainType) (string, error) {
+	return "", errors.New("no impl")
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 type bosObject struct {
@@ -153,6 +161,10 @@ func (inst *bosObject) getUploader(entity buckets.ObjectEntity) uploader {
 		return &middleUploader{object: inst}
 	}
 	return &largeUploader{object: inst}
+}
+
+func (inst *bosObject) UploadByAPI(up *buckets.HTTPUploading) (*buckets.HTTPUploading, error) {
+	return nil, errors.New("no impl")
 }
 
 ////////////////////////////////////////////////////////////////////////////////

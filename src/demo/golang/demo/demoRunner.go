@@ -11,6 +11,7 @@ type DemoRunner struct {
 
 	Demo1 *Demo1 `inject:"#demo1"`
 	Demo2 *Demo2 `inject:"#demo2"`
+	Demo3 *Demo3 `inject:"#demo3"`
 
 	current application.LifeRegistration
 }
@@ -32,7 +33,7 @@ func (inst *DemoRunner) GetLifeRegistration() *application.LifeRegistration {
 
 func (inst *DemoRunner) selectCurrent() application.LifeRegistry {
 	// TODO ...
-	return inst.Demo1
+	return inst.Demo3
 }
 
 func (inst *DemoRunner) initCurrent() {
