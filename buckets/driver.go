@@ -7,7 +7,9 @@ type Driver interface {
 	GetConnector() Connector
 
 	// 从 properties 中加载 bucket 的参数
-	GetBucket(tag, name string, p collection.Properties) (*Bucket, error)
+	GetBucket(tag, id string, p collection.Properties) (*Bucket, error)
+
+	// StringifyProfile(p Profile) string
 }
 
 // DriverRegistration 用来表示某个驱动的注册信息

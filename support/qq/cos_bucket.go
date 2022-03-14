@@ -88,7 +88,7 @@ func (inst *cosBucket) init(b *buckets.Bucket) error {
 
 	inst.bucketName = bName
 	inst.client = client
-	inst.fetchBaseURL = b.URL
+	inst.fetchBaseURL = "https://" + b.BucketDN
 
 	return inst.Check()
 }
@@ -121,9 +121,9 @@ func (inst *cosBucket) GetBucketName() string {
 	return inst.bucketName
 }
 
-func (inst *cosBucket) GetDomainName(dntype buckets.DomainType) (string, error) {
-	return "", errors.New("no impl")
-}
+// func (inst *cosBucket) GetDomainName(p buckets.Profile) (string, error) {
+// 	return "", errors.New("no impl")
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -9,9 +9,10 @@ import (
 type DemoRunner struct {
 	markup.Component `class:"life"`
 
-	Demo1 *Demo1 `inject:"#demo1"`
-	Demo2 *Demo2 `inject:"#demo2"`
-	Demo3 *Demo3 `inject:"#demo3"`
+	DemoSelector string `inject:"${demo.selector}"`
+	Demo1        *Demo1 `inject:"#demo1"`
+	Demo2        *Demo2 `inject:"#demo2"`
+	Demo3        *Demo3 `inject:"#demo3"`
 
 	current application.LifeRegistration
 }
@@ -32,8 +33,17 @@ func (inst *DemoRunner) GetLifeRegistration() *application.LifeRegistration {
 }
 
 func (inst *DemoRunner) selectCurrent() application.LifeRegistry {
-	// TODO ...
-	return inst.Demo3
+	name := inst.DemoSelector
+	all := map[string]application.LifeRegistry{
+		"demo1": inst.Demo1,
+		"demo2": inst.Demo2,
+		"demo3": inst.Demo3,
+	}
+	lr := all[name]
+	if lr == nil {
+		panic("no demo with name:" + name)
+	}
+	return lr
 }
 
 func (inst *DemoRunner) initCurrent() {

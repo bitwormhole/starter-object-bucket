@@ -65,7 +65,7 @@ func (inst *Demo3) Loop() error {
 
 func (inst *Demo3) testUploadByAPIWithBucket(bucket *buckets.Bucket) error {
 
-	driver, err := inst.BM.FindDriver(bucket.Driver)
+	driver, err := inst.BM.FindDriver(bucket.Provider)
 	if err != nil {
 		return err
 	}
@@ -86,8 +86,8 @@ func (inst *Demo3) testUploadByAPIWithBucket(bucket *buckets.Bucket) error {
 
 	up1 := &buckets.HTTPUploading{
 		UseHTTPS: true,
-		Domain:   buckets.BucketPublic,
 	}
+
 	up2, err := o1.UploadByAPI(up1)
 	if err != nil {
 		return err
@@ -152,7 +152,7 @@ func (inst *Demo3) loadBuckets() ([]*buckets.Bucket, error) {
 	dst := make([]*buckets.Bucket, 0)
 	items := strings.Split(inst.DemoBuckets, ",")
 	for _, item := range items {
-		b, err := inst.loadBucketWithName(item)
+		b, err := inst.loadBucketWithID(item)
 		if err != nil {
 			return nil, err
 		}
@@ -161,16 +161,16 @@ func (inst *Demo3) loadBuckets() ([]*buckets.Bucket, error) {
 	return dst, nil
 }
 
-func (inst *Demo3) loadBucketWithName(name string) (*buckets.Bucket, error) {
+func (inst *Demo3) loadBucketWithID(id string) (*buckets.Bucket, error) {
 
-	name = strings.TrimSpace(name)
+	id = strings.TrimSpace(id)
 
 	b := &buckets.Bucket{}
-	p := "bucket." + name + "."
+	p := "bucket." + id + "."
 	getter := inst.Context.GetProperties().Getter()
 
-	b.Driver = getter.GetString(p+"driver", "")
-	b.ID = getter.GetString(p+"id", "")
+	b.Provider = getter.GetString(p+"driver", "")
+	b.ID = id
 
 	// b.User = getter.GetString(p+"user", "")
 	// b.Driver = getter.GetString("", "")

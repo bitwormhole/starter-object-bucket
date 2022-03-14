@@ -10,6 +10,15 @@ import (
 	markup0x23084a "github.com/bitwormhole/starter/markup"
 )
 
+type pComBucketLoader struct {
+	instance *demo0xbcc745.BucketLoader
+	 markup0x23084a.Component `id:"BucketLoader" initMethod:"Init"`
+	CredentialFileName string `inject:"${demo.credential.properties}"`
+	Context application0x67f6c5.Context `inject:"context"`
+	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
+}
+
+
 type pComDemo1 struct {
 	instance *demo0xbcc745.Demo1
 	 markup0x23084a.Component `id:"demo1"`
@@ -20,12 +29,12 @@ type pComDemo1 struct {
 }
 
 
-type pComDemoRunner struct {
-	instance *demo0xbcc745.DemoRunner
-	 markup0x23084a.Component `class:"life"`
-	Demo1 *demo0xbcc745.Demo1 `inject:"#demo1"`
-	Demo2 *demo0xbcc745.Demo2 `inject:"#demo2"`
-	Demo3 *demo0xbcc745.Demo3 `inject:"#demo3"`
+type pComDemo2 struct {
+	instance *demo0xbcc745.Demo2
+	 markup0x23084a.Component `id:"demo2"`
+	DemoBuckets string `inject:"${demo.buckets}"`
+	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
+	BucketLoader *demo0xbcc745.BucketLoader `inject:"#BucketLoader"`
 }
 
 
@@ -39,12 +48,12 @@ type pComDemo3 struct {
 }
 
 
-type pComDemo2 struct {
-	instance *demo0xbcc745.Demo2
-	 markup0x23084a.Component `id:"demo2"`
-	DemoBuckets string `inject:"${demo.buckets}"`
-	CredentialFileName string `inject:"${demo.credential.properties}"`
-	Context application0x67f6c5.Context `inject:"context"`
-	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
+type pComDemoRunner struct {
+	instance *demo0xbcc745.DemoRunner
+	 markup0x23084a.Component `class:"life"`
+	DemoSelector string `inject:"${demo.selector}"`
+	Demo1 *demo0xbcc745.Demo1 `inject:"#demo1"`
+	Demo2 *demo0xbcc745.Demo2 `inject:"#demo2"`
+	Demo3 *demo0xbcc745.Demo3 `inject:"#demo3"`
 }
 

@@ -13,6 +13,8 @@ import (
 type OBSDriver struct {
 	markup.Component `class:"buckets.Driver" initMethod:"Init"`
 
+	BM buckets.Manager `inject:"#buckets.Manager"`
+
 	connector obsConnector
 }
 

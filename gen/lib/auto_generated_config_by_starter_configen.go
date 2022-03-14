@@ -31,36 +31,18 @@ func autoGenConfig(cb application.ConfigBuilder) error {
 	cominfobuilder := config.ComInfo()
 	nop(err,cominfobuilder)
 
-	// component: com0-huawei0xcc0ad2.OBSDriver
+	// component: com0-aliyun0x8a6680.OSSDriver
 	cominfobuilder.Next()
-	cominfobuilder.ID("com0-huawei0xcc0ad2.OBSDriver").Class("buckets.Driver").Aliases("").Scope("")
-	cominfobuilder.Factory((&comFactory4pComOBSDriver{}).init())
-	err = cominfobuilder.CreateTo(cb)
-	if err != nil {
-		return err
-	}
-
-	// component: com1-qq0x13bfdf.COSDriver
-	cominfobuilder.Next()
-	cominfobuilder.ID("com1-qq0x13bfdf.COSDriver").Class("buckets.Driver").Aliases("").Scope("")
-	cominfobuilder.Factory((&comFactory4pComCOSDriver{}).init())
-	err = cominfobuilder.CreateTo(cb)
-	if err != nil {
-		return err
-	}
-
-	// component: com2-aliyun0x8a6680.OSSDriver
-	cominfobuilder.Next()
-	cominfobuilder.ID("com2-aliyun0x8a6680.OSSDriver").Class("buckets.Driver").Aliases("").Scope("")
+	cominfobuilder.ID("com0-aliyun0x8a6680.OSSDriver").Class("buckets.Driver").Aliases("").Scope("")
 	cominfobuilder.Factory((&comFactory4pComOSSDriver{}).init())
 	err = cominfobuilder.CreateTo(cb)
 	if err != nil {
 		return err
 	}
 
-	// component: com3-baidu0xa9ed2f.BOSDriver
+	// component: com1-baidu0xa9ed2f.BOSDriver
 	cominfobuilder.Next()
-	cominfobuilder.ID("com3-baidu0xa9ed2f.BOSDriver").Class("buckets.Driver").Aliases("").Scope("")
+	cominfobuilder.ID("com1-baidu0xa9ed2f.BOSDriver").Class("buckets.Driver").Aliases("").Scope("")
 	cominfobuilder.Factory((&comFactory4pComBOSDriver{}).init())
 	err = cominfobuilder.CreateTo(cb)
 	if err != nil {
@@ -76,6 +58,24 @@ func autoGenConfig(cb application.ConfigBuilder) error {
 		return err
 	}
 
+	// component: com3-huawei0xcc0ad2.OBSDriver
+	cominfobuilder.Next()
+	cominfobuilder.ID("com3-huawei0xcc0ad2.OBSDriver").Class("buckets.Driver").Aliases("").Scope("")
+	cominfobuilder.Factory((&comFactory4pComOBSDriver{}).init())
+	err = cominfobuilder.CreateTo(cb)
+	if err != nil {
+		return err
+	}
+
+	// component: com4-qq0x13bfdf.COSDriver
+	cominfobuilder.Next()
+	cominfobuilder.ID("com4-qq0x13bfdf.COSDriver").Class("buckets.Driver").Aliases("").Scope("")
+	cominfobuilder.Factory((&comFactory4pComCOSDriver{}).init())
+	err = cominfobuilder.CreateTo(cb)
+	if err != nil {
+		return err
+	}
+
 
 
     return nil
@@ -83,126 +83,20 @@ func autoGenConfig(cb application.ConfigBuilder) error {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// comFactory4pComOBSDriver : the factory of component: com0-huawei0xcc0ad2.OBSDriver
-type comFactory4pComOBSDriver struct {
-
-    mPrototype * huawei0xcc0ad2.OBSDriver
-
-	
-
-}
-
-func (inst * comFactory4pComOBSDriver) init() application.ComponentFactory {
-
-	
-
-
-	inst.mPrototype = inst.newObject()
-    return inst
-}
-
-func (inst * comFactory4pComOBSDriver) newObject() * huawei0xcc0ad2.OBSDriver {
-	return & huawei0xcc0ad2.OBSDriver {}
-}
-
-func (inst * comFactory4pComOBSDriver) castObject(instance application.ComponentInstance) * huawei0xcc0ad2.OBSDriver {
-	return instance.Get().(*huawei0xcc0ad2.OBSDriver)
-}
-
-func (inst * comFactory4pComOBSDriver) GetPrototype() lang.Object {
-	return inst.mPrototype
-}
-
-func (inst * comFactory4pComOBSDriver) NewInstance() application.ComponentInstance {
-	return config.SimpleInstance(inst, inst.newObject())
-}
-
-func (inst * comFactory4pComOBSDriver) AfterService() application.ComponentAfterService {
-	return inst
-}
-
-func (inst * comFactory4pComOBSDriver) Init(instance application.ComponentInstance) error {
-	return inst.castObject(instance).Init()
-}
-
-func (inst * comFactory4pComOBSDriver) Destroy(instance application.ComponentInstance) error {
-	return nil
-}
-
-func (inst * comFactory4pComOBSDriver) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
-	return nil
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-// comFactory4pComCOSDriver : the factory of component: com1-qq0x13bfdf.COSDriver
-type comFactory4pComCOSDriver struct {
-
-    mPrototype * qq0x13bfdf.COSDriver
-
-	
-
-}
-
-func (inst * comFactory4pComCOSDriver) init() application.ComponentFactory {
-
-	
-
-
-	inst.mPrototype = inst.newObject()
-    return inst
-}
-
-func (inst * comFactory4pComCOSDriver) newObject() * qq0x13bfdf.COSDriver {
-	return & qq0x13bfdf.COSDriver {}
-}
-
-func (inst * comFactory4pComCOSDriver) castObject(instance application.ComponentInstance) * qq0x13bfdf.COSDriver {
-	return instance.Get().(*qq0x13bfdf.COSDriver)
-}
-
-func (inst * comFactory4pComCOSDriver) GetPrototype() lang.Object {
-	return inst.mPrototype
-}
-
-func (inst * comFactory4pComCOSDriver) NewInstance() application.ComponentInstance {
-	return config.SimpleInstance(inst, inst.newObject())
-}
-
-func (inst * comFactory4pComCOSDriver) AfterService() application.ComponentAfterService {
-	return inst
-}
-
-func (inst * comFactory4pComCOSDriver) Init(instance application.ComponentInstance) error {
-	return inst.castObject(instance).Init()
-}
-
-func (inst * comFactory4pComCOSDriver) Destroy(instance application.ComponentInstance) error {
-	return nil
-}
-
-func (inst * comFactory4pComCOSDriver) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
-	return nil
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-// comFactory4pComOSSDriver : the factory of component: com2-aliyun0x8a6680.OSSDriver
+// comFactory4pComOSSDriver : the factory of component: com0-aliyun0x8a6680.OSSDriver
 type comFactory4pComOSSDriver struct {
 
     mPrototype * aliyun0x8a6680.OSSDriver
 
 	
+	mBMSelector config.InjectionSelector
 
 }
 
 func (inst * comFactory4pComOSSDriver) init() application.ComponentFactory {
 
 	
+	inst.mBMSelector = config.NewInjectionSelector("#buckets.Manager",nil)
 
 
 	inst.mPrototype = inst.newObject()
@@ -238,25 +132,48 @@ func (inst * comFactory4pComOSSDriver) Destroy(instance application.ComponentIns
 }
 
 func (inst * comFactory4pComOSSDriver) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
-	return nil
+	
+	obj := inst.castObject(instance)
+	obj.BM = inst.getterForFieldBMSelector(context)
+	return context.LastError()
+}
+
+//getterForFieldBMSelector
+func (inst * comFactory4pComOSSDriver) getterForFieldBMSelector (context application.InstanceContext) buckets0xc61cfb.Manager {
+
+	o1 := inst.mBMSelector.GetOne(context)
+	o2, ok := o1.(buckets0xc61cfb.Manager)
+	if !ok {
+		eb := &util.ErrorBuilder{}
+		eb.Message("bad cast")
+		eb.Set("com", "com0-aliyun0x8a6680.OSSDriver")
+		eb.Set("field", "BM")
+		eb.Set("type1", "?")
+		eb.Set("type2", "buckets0xc61cfb.Manager")
+		context.HandleError(eb.Create())
+		return nil
+	}
+	return o2
 }
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// comFactory4pComBOSDriver : the factory of component: com3-baidu0xa9ed2f.BOSDriver
+// comFactory4pComBOSDriver : the factory of component: com1-baidu0xa9ed2f.BOSDriver
 type comFactory4pComBOSDriver struct {
 
     mPrototype * baidu0xa9ed2f.BOSDriver
 
 	
+	mBMSelector config.InjectionSelector
 
 }
 
 func (inst * comFactory4pComBOSDriver) init() application.ComponentFactory {
 
 	
+	inst.mBMSelector = config.NewInjectionSelector("#buckets.Manager",nil)
 
 
 	inst.mPrototype = inst.newObject()
@@ -292,7 +209,28 @@ func (inst * comFactory4pComBOSDriver) Destroy(instance application.ComponentIns
 }
 
 func (inst * comFactory4pComBOSDriver) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
-	return nil
+	
+	obj := inst.castObject(instance)
+	obj.BM = inst.getterForFieldBMSelector(context)
+	return context.LastError()
+}
+
+//getterForFieldBMSelector
+func (inst * comFactory4pComBOSDriver) getterForFieldBMSelector (context application.InstanceContext) buckets0xc61cfb.Manager {
+
+	o1 := inst.mBMSelector.GetOne(context)
+	o2, ok := o1.(buckets0xc61cfb.Manager)
+	if !ok {
+		eb := &util.ErrorBuilder{}
+		eb.Message("bad cast")
+		eb.Set("com", "com1-baidu0xa9ed2f.BOSDriver")
+		eb.Set("field", "BM")
+		eb.Set("type1", "?")
+		eb.Set("type2", "buckets0xc61cfb.Manager")
+		context.HandleError(eb.Create())
+		return nil
+	}
+	return o2
 }
 
 
@@ -365,6 +303,160 @@ func (inst * comFactory4pComDefaultBucketDriverManager) getterForFieldDriverSour
 		}
 	}
 	return list2
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+// comFactory4pComOBSDriver : the factory of component: com3-huawei0xcc0ad2.OBSDriver
+type comFactory4pComOBSDriver struct {
+
+    mPrototype * huawei0xcc0ad2.OBSDriver
+
+	
+	mBMSelector config.InjectionSelector
+
+}
+
+func (inst * comFactory4pComOBSDriver) init() application.ComponentFactory {
+
+	
+	inst.mBMSelector = config.NewInjectionSelector("#buckets.Manager",nil)
+
+
+	inst.mPrototype = inst.newObject()
+    return inst
+}
+
+func (inst * comFactory4pComOBSDriver) newObject() * huawei0xcc0ad2.OBSDriver {
+	return & huawei0xcc0ad2.OBSDriver {}
+}
+
+func (inst * comFactory4pComOBSDriver) castObject(instance application.ComponentInstance) * huawei0xcc0ad2.OBSDriver {
+	return instance.Get().(*huawei0xcc0ad2.OBSDriver)
+}
+
+func (inst * comFactory4pComOBSDriver) GetPrototype() lang.Object {
+	return inst.mPrototype
+}
+
+func (inst * comFactory4pComOBSDriver) NewInstance() application.ComponentInstance {
+	return config.SimpleInstance(inst, inst.newObject())
+}
+
+func (inst * comFactory4pComOBSDriver) AfterService() application.ComponentAfterService {
+	return inst
+}
+
+func (inst * comFactory4pComOBSDriver) Init(instance application.ComponentInstance) error {
+	return inst.castObject(instance).Init()
+}
+
+func (inst * comFactory4pComOBSDriver) Destroy(instance application.ComponentInstance) error {
+	return nil
+}
+
+func (inst * comFactory4pComOBSDriver) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
+	
+	obj := inst.castObject(instance)
+	obj.BM = inst.getterForFieldBMSelector(context)
+	return context.LastError()
+}
+
+//getterForFieldBMSelector
+func (inst * comFactory4pComOBSDriver) getterForFieldBMSelector (context application.InstanceContext) buckets0xc61cfb.Manager {
+
+	o1 := inst.mBMSelector.GetOne(context)
+	o2, ok := o1.(buckets0xc61cfb.Manager)
+	if !ok {
+		eb := &util.ErrorBuilder{}
+		eb.Message("bad cast")
+		eb.Set("com", "com3-huawei0xcc0ad2.OBSDriver")
+		eb.Set("field", "BM")
+		eb.Set("type1", "?")
+		eb.Set("type2", "buckets0xc61cfb.Manager")
+		context.HandleError(eb.Create())
+		return nil
+	}
+	return o2
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+// comFactory4pComCOSDriver : the factory of component: com4-qq0x13bfdf.COSDriver
+type comFactory4pComCOSDriver struct {
+
+    mPrototype * qq0x13bfdf.COSDriver
+
+	
+	mBMSelector config.InjectionSelector
+
+}
+
+func (inst * comFactory4pComCOSDriver) init() application.ComponentFactory {
+
+	
+	inst.mBMSelector = config.NewInjectionSelector("#buckets.Manager",nil)
+
+
+	inst.mPrototype = inst.newObject()
+    return inst
+}
+
+func (inst * comFactory4pComCOSDriver) newObject() * qq0x13bfdf.COSDriver {
+	return & qq0x13bfdf.COSDriver {}
+}
+
+func (inst * comFactory4pComCOSDriver) castObject(instance application.ComponentInstance) * qq0x13bfdf.COSDriver {
+	return instance.Get().(*qq0x13bfdf.COSDriver)
+}
+
+func (inst * comFactory4pComCOSDriver) GetPrototype() lang.Object {
+	return inst.mPrototype
+}
+
+func (inst * comFactory4pComCOSDriver) NewInstance() application.ComponentInstance {
+	return config.SimpleInstance(inst, inst.newObject())
+}
+
+func (inst * comFactory4pComCOSDriver) AfterService() application.ComponentAfterService {
+	return inst
+}
+
+func (inst * comFactory4pComCOSDriver) Init(instance application.ComponentInstance) error {
+	return inst.castObject(instance).Init()
+}
+
+func (inst * comFactory4pComCOSDriver) Destroy(instance application.ComponentInstance) error {
+	return nil
+}
+
+func (inst * comFactory4pComCOSDriver) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
+	
+	obj := inst.castObject(instance)
+	obj.BM = inst.getterForFieldBMSelector(context)
+	return context.LastError()
+}
+
+//getterForFieldBMSelector
+func (inst * comFactory4pComCOSDriver) getterForFieldBMSelector (context application.InstanceContext) buckets0xc61cfb.Manager {
+
+	o1 := inst.mBMSelector.GetOne(context)
+	o2, ok := o1.(buckets0xc61cfb.Manager)
+	if !ok {
+		eb := &util.ErrorBuilder{}
+		eb.Message("bad cast")
+		eb.Set("com", "com4-qq0x13bfdf.COSDriver")
+		eb.Set("field", "BM")
+		eb.Set("type1", "?")
+		eb.Set("type2", "buckets0xc61cfb.Manager")
+		context.HandleError(eb.Create())
+		return nil
+	}
+	return o2
 }
 
 

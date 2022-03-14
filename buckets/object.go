@@ -20,10 +20,9 @@ type ObjectMeta struct {
 	More          map[string]string
 }
 
-// Uploading
+// HTTPUploading ...
 type HTTPUploading struct {
 	UseHTTPS       bool
-	Domain         DomainType
 	Method         string
 	URL            string
 	ContentType    string

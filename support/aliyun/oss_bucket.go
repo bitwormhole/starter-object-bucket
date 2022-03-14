@@ -20,9 +20,8 @@ const (
 
 	// for 桶
 
-	pBucketName     = "bucket"
-	pBucketEndpoint = "endpoint"
-	pBucketBaseURL  = "url"
+	pBucketEndpoint = "ext-bucket-endpoint"
+	pBucketName     = "ext-bucket-name"
 
 	// for 凭证
 
@@ -42,6 +41,7 @@ type ossBucketConnection struct {
 	bucketName      string
 	client          *oss.Client
 	bucket          *oss.Bucket
+	bucketDN        string
 	fetchBaseURL    string
 	dnSet           core.BucketDNSet
 	accessKeyID     string
@@ -52,14 +52,41 @@ func (inst *ossBucketConnection) _Impl() buckets.Connection {
 	return inst
 }
 
+// func (inst *ossBucketConnection) makeEndpointDN(b *buckets.Bucket) string {
+// 	builder := buckets.DomainNameBuilder{}
+// 	builder.Template = b.EndpointDomainTemplate
+// 	builder.BucketName = b.Name
+// 	builder.Profile = inst.stringifyAccess(b.Profile)
+// 	builder.Zone = b.Zone
+// 	return builder.DomainName()
+// }
+
+// func (inst *ossBucketConnection) stringifyAccess(p buckets.Profile) string {
+// 	access := p & buckets.ProfileMaskAccess
+// 	switch access {
+// 	case buckets.ProfileAcc:
+// 		return "-todo"
+// 	case buckets.ProfileCustomer:
+// 		return "-todo"
+// 	case buckets.ProfileInternal:
+// 		return "-internal"
+// 	case buckets.ProfilePublic:
+// 		return ""
+// 	case buckets.ProfileVPC:
+// 		return "-todo"
+// 	default:
+// 		return "-internal"
+// 	}
+// }
+
 func (inst *ossBucketConnection) init(b *buckets.Bucket) error {
 
 	ext := b.Ext
-	endpoint := ext[pBucketEndpoint]
+	endpoint := b.EndpointDN
 	akeyID := ext[pAccessKeyID]
 	akeySecret := ext[pAccessKeySecret]
-	bucketName := ext[pBucketName]
-	bucketURL := b.URL
+	bucketName := b.Name
+	bucketURL := "https://" + b.BucketDN
 
 	client, err := oss.New(endpoint, akeyID, akeySecret)
 	if err != nil {
@@ -72,6 +99,7 @@ func (inst *ossBucketConnection) init(b *buckets.Bucket) error {
 	}
 
 	inst.bucketName = bucketName
+	inst.bucketDN = b.BucketDN
 	inst.client = client
 	inst.bucket = bucket
 	inst.fetchBaseURL = bucketURL
@@ -112,9 +140,9 @@ func (inst *ossBucketConnection) GetBucketName() string {
 	return inst.bucketName
 }
 
-func (inst *ossBucketConnection) GetDomainName(dntype buckets.DomainType) (string, error) {
-	return inst.dnSet.GetDN(dntype)
-}
+// func (inst *ossBucketConnection) GetDomainName(p buckets.Profile) (string, error) {
+// 	return inst.dnSet.GetDN(p)
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -253,7 +281,7 @@ func (inst *ossObject) UploadByAPI(up1 *buckets.HTTPUploading) (*buckets.HTTPUpl
 	contentType := up2.ContentType
 	md5sum := up2.ContentMD5.String()
 	length := up2.ContentLength
-	dn, _ := inst.parent.dnSet.GetDN(up2.Domain)
+	dn := inst.parent.bucketDN
 
 	if length < 0 {
 		length = 0

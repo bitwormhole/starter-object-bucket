@@ -13,6 +13,8 @@ import (
 type OSSDriver struct {
 	markup.Component `class:"buckets.Driver" initMethod:"Init"`
 
+	BM buckets.Manager `inject:"#buckets.Manager"`
+
 	connector aliyunConnector
 }
 
@@ -39,20 +41,15 @@ func (inst *OSSDriver) ListDrivers() []*buckets.DriverRegistration {
 // GetBucket ...
 func (inst *OSSDriver) GetBucket(tag, id string, p collection.Properties) (*buckets.Bucket, error) {
 	ldr := core.BucketLoader{}
-	ldr.WantBucketExt = []string{pBucketEndpoint, pBucketName,
-		string(buckets.BucketAcc),
-		string(buckets.BucketCustomer),
-		string(buckets.BucketInternal),
-		string(buckets.BucketPublic),
-		string(buckets.BucketVPC),
-		string(buckets.EndpointAcc),
-		string(buckets.EndpointCustomer),
-		string(buckets.EndpointInternal),
-		string(buckets.EndpointPublic),
-		string(buckets.EndpointVPC),
-	}
+	ldr.WantBucketExt = []string{core.ParamBucketDN, core.ParamEndpointDN}
 	ldr.WantCredentialExt = []string{pAccessKeyID, pAccessKeySecret}
-	return ldr.Load(tag, id, p)
+	ldr.WantDriverExt = []string{}
+	b, err := ldr.Load(tag, id, p)
+	if err != nil {
+		return nil, err
+	}
+	b.Driver = inst
+	return b, nil
 }
 
 // GetConnector ...

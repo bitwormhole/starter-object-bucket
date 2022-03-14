@@ -81,9 +81,9 @@ func (inst *obsBucket) GetBucketName() string {
 	return inst.bucketName
 }
 
-func (inst *obsBucket) GetDomainName(dntype buckets.DomainType) (string, error) {
-	return "", errors.New("no impl")
-}
+// func (inst *obsBucket) GetDomainName(p buckets.Profile) (string, error) {
+// 	return "", errors.New("no impl")
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 

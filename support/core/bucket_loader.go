@@ -7,16 +7,23 @@ import (
 
 // 基本的 bucket 参数
 const (
-	BaseBucketParamID         = "id"
-	BaseBucketParamURL        = "url"
-	BaseBucketParamDriver     = "driver"
-	BaseBucketParamCredential = "credential"
+	ParamBucketID         = "id"
+	ParamBucketDriver     = "driver"
+	ParamBucketCredential = "credential"
+	ParamBucketName       = "name"
+	ParamBucketDN         = "dn-bucket"
+	ParamEndpointDN       = "dn-endpoint"
+
+	// ParamBucketPublicURL  = "url"
+	// ParamBucketZone       = "zone"
+
 )
 
 // BucketLoader 是 Bucket 的加载器
 type BucketLoader struct {
 	WantBucketExt     []string // 扩展的 bucket 参数
 	WantCredentialExt []string // 扩展的 Credential 参数
+	WantDriverExt     []string // 扩展的 driver 参数
 }
 
 func (inst *BucketLoader) addWant(tag, id, name string, wants map[string]string) {
@@ -34,7 +41,19 @@ func (inst *BucketLoader) addWants(tag, id string, namelist []string, wants map[
 }
 
 func (inst *BucketLoader) listBaseParams() []string {
-	return []string{BaseBucketParamCredential, BaseBucketParamDriver, BaseBucketParamID, BaseBucketParamURL}
+	return []string{
+		ParamBucketCredential,
+		ParamBucketDriver,
+		ParamBucketName,
+		ParamBucketDN,
+		ParamEndpointDN,
+
+		// ParamBucketPublicURL,
+		// ParamBucketZone,
+		// 以下两个参数由driver提供
+		// ParamBucketDomainNameTemplate,
+		// ParamEndpointDomainNameTemplate,
+	}
 }
 
 // Load ...
@@ -44,10 +63,12 @@ func (inst *BucketLoader) Load(tag, id string, p collection.Properties) (*bucket
 	wants := make(map[string]string) // map[fullkey] shortkey
 	ext := make(map[string]string)
 	credentialID := getter.GetString(tag+"."+id+".credential", "")
+	driverID := getter.GetString(tag+"."+id+".driver", "")
 
 	inst.addWants(tag, id, inst.listBaseParams(), wants)
 	inst.addWants(tag, id, inst.WantBucketExt, wants)
 	inst.addWants("credential", credentialID, inst.WantCredentialExt, wants)
+	inst.addWants("bucket-driver", driverID, inst.WantDriverExt, wants)
 
 	for fullkey, shortkey := range wants {
 		ext[shortkey] = getter.GetString(fullkey, "")
@@ -58,10 +79,12 @@ func (inst *BucketLoader) Load(tag, id string, p collection.Properties) (*bucket
 	}
 
 	b := &buckets.Bucket{}
-	b.Credential = ext[BaseBucketParamCredential]
-	b.Driver = ext[BaseBucketParamDriver]
-	b.ID = ext[BaseBucketParamID]
-	b.URL = ext[BaseBucketParamURL]
+	b.ID = id
+	b.Provider = ext[ParamBucketDriver]
+	b.Name = ext[ParamBucketName]
+	b.Credential = ext[ParamBucketCredential]
+	b.BucketDN = ext[ParamBucketDN]
+	b.EndpointDN = ext[ParamEndpointDN]
 	b.Ext = ext
 	return b, nil
 }

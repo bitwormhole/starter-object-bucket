@@ -27,28 +27,19 @@ func autoGenConfig(cb application.ConfigBuilder) error {
 	cominfobuilder := config.ComInfo()
 	nop(err,cominfobuilder)
 
+	// component: BucketLoader
+	cominfobuilder.Next()
+	cominfobuilder.ID("BucketLoader").Class("").Aliases("").Scope("")
+	cominfobuilder.Factory((&comFactory4pComBucketLoader{}).init())
+	err = cominfobuilder.CreateTo(cb)
+	if err != nil {
+		return err
+	}
+
 	// component: demo1
 	cominfobuilder.Next()
 	cominfobuilder.ID("demo1").Class("").Aliases("").Scope("")
 	cominfobuilder.Factory((&comFactory4pComDemo1{}).init())
-	err = cominfobuilder.CreateTo(cb)
-	if err != nil {
-		return err
-	}
-
-	// component: com1-demo0xbcc745.DemoRunner
-	cominfobuilder.Next()
-	cominfobuilder.ID("com1-demo0xbcc745.DemoRunner").Class("life").Aliases("").Scope("")
-	cominfobuilder.Factory((&comFactory4pComDemoRunner{}).init())
-	err = cominfobuilder.CreateTo(cb)
-	if err != nil {
-		return err
-	}
-
-	// component: demo3
-	cominfobuilder.Next()
-	cominfobuilder.ID("demo3").Class("").Aliases("").Scope("")
-	cominfobuilder.Factory((&comFactory4pComDemo3{}).init())
 	err = cominfobuilder.CreateTo(cb)
 	if err != nil {
 		return err
@@ -63,10 +54,121 @@ func autoGenConfig(cb application.ConfigBuilder) error {
 		return err
 	}
 
+	// component: demo3
+	cominfobuilder.Next()
+	cominfobuilder.ID("demo3").Class("").Aliases("").Scope("")
+	cominfobuilder.Factory((&comFactory4pComDemo3{}).init())
+	err = cominfobuilder.CreateTo(cb)
+	if err != nil {
+		return err
+	}
+
+	// component: com4-demo0xbcc745.DemoRunner
+	cominfobuilder.Next()
+	cominfobuilder.ID("com4-demo0xbcc745.DemoRunner").Class("life").Aliases("").Scope("")
+	cominfobuilder.Factory((&comFactory4pComDemoRunner{}).init())
+	err = cominfobuilder.CreateTo(cb)
+	if err != nil {
+		return err
+	}
+
 
 
     return nil
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+// comFactory4pComBucketLoader : the factory of component: BucketLoader
+type comFactory4pComBucketLoader struct {
+
+    mPrototype * demo0xbcc745.BucketLoader
+
+	
+	mCredentialFileNameSelector config.InjectionSelector
+	mContextSelector config.InjectionSelector
+	mBMSelector config.InjectionSelector
+
+}
+
+func (inst * comFactory4pComBucketLoader) init() application.ComponentFactory {
+
+	
+	inst.mCredentialFileNameSelector = config.NewInjectionSelector("${demo.credential.properties}",nil)
+	inst.mContextSelector = config.NewInjectionSelector("context",nil)
+	inst.mBMSelector = config.NewInjectionSelector("#buckets.Manager",nil)
+
+
+	inst.mPrototype = inst.newObject()
+    return inst
+}
+
+func (inst * comFactory4pComBucketLoader) newObject() * demo0xbcc745.BucketLoader {
+	return & demo0xbcc745.BucketLoader {}
+}
+
+func (inst * comFactory4pComBucketLoader) castObject(instance application.ComponentInstance) * demo0xbcc745.BucketLoader {
+	return instance.Get().(*demo0xbcc745.BucketLoader)
+}
+
+func (inst * comFactory4pComBucketLoader) GetPrototype() lang.Object {
+	return inst.mPrototype
+}
+
+func (inst * comFactory4pComBucketLoader) NewInstance() application.ComponentInstance {
+	return config.SimpleInstance(inst, inst.newObject())
+}
+
+func (inst * comFactory4pComBucketLoader) AfterService() application.ComponentAfterService {
+	return inst
+}
+
+func (inst * comFactory4pComBucketLoader) Init(instance application.ComponentInstance) error {
+	return inst.castObject(instance).Init()
+}
+
+func (inst * comFactory4pComBucketLoader) Destroy(instance application.ComponentInstance) error {
+	return nil
+}
+
+func (inst * comFactory4pComBucketLoader) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
+	
+	obj := inst.castObject(instance)
+	obj.CredentialFileName = inst.getterForFieldCredentialFileNameSelector(context)
+	obj.Context = inst.getterForFieldContextSelector(context)
+	obj.BM = inst.getterForFieldBMSelector(context)
+	return context.LastError()
+}
+
+//getterForFieldCredentialFileNameSelector
+func (inst * comFactory4pComBucketLoader) getterForFieldCredentialFileNameSelector (context application.InstanceContext) string {
+    return inst.mCredentialFileNameSelector.GetString(context)
+}
+
+//getterForFieldContextSelector
+func (inst * comFactory4pComBucketLoader) getterForFieldContextSelector (context application.InstanceContext) application.Context {
+    return context.Context()
+}
+
+//getterForFieldBMSelector
+func (inst * comFactory4pComBucketLoader) getterForFieldBMSelector (context application.InstanceContext) buckets0xc61cfb.Manager {
+
+	o1 := inst.mBMSelector.GetOne(context)
+	o2, ok := o1.(buckets0xc61cfb.Manager)
+	if !ok {
+		eb := &util.ErrorBuilder{}
+		eb.Message("bad cast")
+		eb.Set("com", "BucketLoader")
+		eb.Set("field", "BM")
+		eb.Set("type1", "?")
+		eb.Set("type2", "buckets0xc61cfb.Manager")
+		context.HandleError(eb.Create())
+		return nil
+	}
+	return o2
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -171,115 +273,102 @@ func (inst * comFactory4pComDemo1) getterForFieldBMSelector (context application
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// comFactory4pComDemoRunner : the factory of component: com1-demo0xbcc745.DemoRunner
-type comFactory4pComDemoRunner struct {
+// comFactory4pComDemo2 : the factory of component: demo2
+type comFactory4pComDemo2 struct {
 
-    mPrototype * demo0xbcc745.DemoRunner
+    mPrototype * demo0xbcc745.Demo2
 
 	
-	mDemo1Selector config.InjectionSelector
-	mDemo2Selector config.InjectionSelector
-	mDemo3Selector config.InjectionSelector
+	mDemoBucketsSelector config.InjectionSelector
+	mBMSelector config.InjectionSelector
+	mBucketLoaderSelector config.InjectionSelector
 
 }
 
-func (inst * comFactory4pComDemoRunner) init() application.ComponentFactory {
+func (inst * comFactory4pComDemo2) init() application.ComponentFactory {
 
 	
-	inst.mDemo1Selector = config.NewInjectionSelector("#demo1",nil)
-	inst.mDemo2Selector = config.NewInjectionSelector("#demo2",nil)
-	inst.mDemo3Selector = config.NewInjectionSelector("#demo3",nil)
+	inst.mDemoBucketsSelector = config.NewInjectionSelector("${demo.buckets}",nil)
+	inst.mBMSelector = config.NewInjectionSelector("#buckets.Manager",nil)
+	inst.mBucketLoaderSelector = config.NewInjectionSelector("#BucketLoader",nil)
 
 
 	inst.mPrototype = inst.newObject()
     return inst
 }
 
-func (inst * comFactory4pComDemoRunner) newObject() * demo0xbcc745.DemoRunner {
-	return & demo0xbcc745.DemoRunner {}
+func (inst * comFactory4pComDemo2) newObject() * demo0xbcc745.Demo2 {
+	return & demo0xbcc745.Demo2 {}
 }
 
-func (inst * comFactory4pComDemoRunner) castObject(instance application.ComponentInstance) * demo0xbcc745.DemoRunner {
-	return instance.Get().(*demo0xbcc745.DemoRunner)
+func (inst * comFactory4pComDemo2) castObject(instance application.ComponentInstance) * demo0xbcc745.Demo2 {
+	return instance.Get().(*demo0xbcc745.Demo2)
 }
 
-func (inst * comFactory4pComDemoRunner) GetPrototype() lang.Object {
+func (inst * comFactory4pComDemo2) GetPrototype() lang.Object {
 	return inst.mPrototype
 }
 
-func (inst * comFactory4pComDemoRunner) NewInstance() application.ComponentInstance {
+func (inst * comFactory4pComDemo2) NewInstance() application.ComponentInstance {
 	return config.SimpleInstance(inst, inst.newObject())
 }
 
-func (inst * comFactory4pComDemoRunner) AfterService() application.ComponentAfterService {
+func (inst * comFactory4pComDemo2) AfterService() application.ComponentAfterService {
 	return inst
 }
 
-func (inst * comFactory4pComDemoRunner) Init(instance application.ComponentInstance) error {
+func (inst * comFactory4pComDemo2) Init(instance application.ComponentInstance) error {
 	return nil
 }
 
-func (inst * comFactory4pComDemoRunner) Destroy(instance application.ComponentInstance) error {
+func (inst * comFactory4pComDemo2) Destroy(instance application.ComponentInstance) error {
 	return nil
 }
 
-func (inst * comFactory4pComDemoRunner) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
+func (inst * comFactory4pComDemo2) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
 	
 	obj := inst.castObject(instance)
-	obj.Demo1 = inst.getterForFieldDemo1Selector(context)
-	obj.Demo2 = inst.getterForFieldDemo2Selector(context)
-	obj.Demo3 = inst.getterForFieldDemo3Selector(context)
+	obj.DemoBuckets = inst.getterForFieldDemoBucketsSelector(context)
+	obj.BM = inst.getterForFieldBMSelector(context)
+	obj.BucketLoader = inst.getterForFieldBucketLoaderSelector(context)
 	return context.LastError()
 }
 
-//getterForFieldDemo1Selector
-func (inst * comFactory4pComDemoRunner) getterForFieldDemo1Selector (context application.InstanceContext) *demo0xbcc745.Demo1 {
+//getterForFieldDemoBucketsSelector
+func (inst * comFactory4pComDemo2) getterForFieldDemoBucketsSelector (context application.InstanceContext) string {
+    return inst.mDemoBucketsSelector.GetString(context)
+}
 
-	o1 := inst.mDemo1Selector.GetOne(context)
-	o2, ok := o1.(*demo0xbcc745.Demo1)
+//getterForFieldBMSelector
+func (inst * comFactory4pComDemo2) getterForFieldBMSelector (context application.InstanceContext) buckets0xc61cfb.Manager {
+
+	o1 := inst.mBMSelector.GetOne(context)
+	o2, ok := o1.(buckets0xc61cfb.Manager)
 	if !ok {
 		eb := &util.ErrorBuilder{}
 		eb.Message("bad cast")
-		eb.Set("com", "com1-demo0xbcc745.DemoRunner")
-		eb.Set("field", "Demo1")
+		eb.Set("com", "demo2")
+		eb.Set("field", "BM")
 		eb.Set("type1", "?")
-		eb.Set("type2", "*demo0xbcc745.Demo1")
+		eb.Set("type2", "buckets0xc61cfb.Manager")
 		context.HandleError(eb.Create())
 		return nil
 	}
 	return o2
 }
 
-//getterForFieldDemo2Selector
-func (inst * comFactory4pComDemoRunner) getterForFieldDemo2Selector (context application.InstanceContext) *demo0xbcc745.Demo2 {
+//getterForFieldBucketLoaderSelector
+func (inst * comFactory4pComDemo2) getterForFieldBucketLoaderSelector (context application.InstanceContext) *demo0xbcc745.BucketLoader {
 
-	o1 := inst.mDemo2Selector.GetOne(context)
-	o2, ok := o1.(*demo0xbcc745.Demo2)
+	o1 := inst.mBucketLoaderSelector.GetOne(context)
+	o2, ok := o1.(*demo0xbcc745.BucketLoader)
 	if !ok {
 		eb := &util.ErrorBuilder{}
 		eb.Message("bad cast")
-		eb.Set("com", "com1-demo0xbcc745.DemoRunner")
-		eb.Set("field", "Demo2")
+		eb.Set("com", "demo2")
+		eb.Set("field", "BucketLoader")
 		eb.Set("type1", "?")
-		eb.Set("type2", "*demo0xbcc745.Demo2")
-		context.HandleError(eb.Create())
-		return nil
-	}
-	return o2
-}
-
-//getterForFieldDemo3Selector
-func (inst * comFactory4pComDemoRunner) getterForFieldDemo3Selector (context application.InstanceContext) *demo0xbcc745.Demo3 {
-
-	o1 := inst.mDemo3Selector.GetOne(context)
-	o2, ok := o1.(*demo0xbcc745.Demo3)
-	if !ok {
-		eb := &util.ErrorBuilder{}
-		eb.Message("bad cast")
-		eb.Set("com", "com1-demo0xbcc745.DemoRunner")
-		eb.Set("field", "Demo3")
-		eb.Set("type1", "?")
-		eb.Set("type2", "*demo0xbcc745.Demo3")
+		eb.Set("type2", "*demo0xbcc745.BucketLoader")
 		context.HandleError(eb.Create())
 		return nil
 	}
@@ -391,97 +480,123 @@ func (inst * comFactory4pComDemo3) getterForFieldBMSelector (context application
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// comFactory4pComDemo2 : the factory of component: demo2
-type comFactory4pComDemo2 struct {
+// comFactory4pComDemoRunner : the factory of component: com4-demo0xbcc745.DemoRunner
+type comFactory4pComDemoRunner struct {
 
-    mPrototype * demo0xbcc745.Demo2
+    mPrototype * demo0xbcc745.DemoRunner
 
 	
-	mDemoBucketsSelector config.InjectionSelector
-	mCredentialFileNameSelector config.InjectionSelector
-	mContextSelector config.InjectionSelector
-	mBMSelector config.InjectionSelector
+	mDemoSelectorSelector config.InjectionSelector
+	mDemo1Selector config.InjectionSelector
+	mDemo2Selector config.InjectionSelector
+	mDemo3Selector config.InjectionSelector
 
 }
 
-func (inst * comFactory4pComDemo2) init() application.ComponentFactory {
+func (inst * comFactory4pComDemoRunner) init() application.ComponentFactory {
 
 	
-	inst.mDemoBucketsSelector = config.NewInjectionSelector("${demo.buckets}",nil)
-	inst.mCredentialFileNameSelector = config.NewInjectionSelector("${demo.credential.properties}",nil)
-	inst.mContextSelector = config.NewInjectionSelector("context",nil)
-	inst.mBMSelector = config.NewInjectionSelector("#buckets.Manager",nil)
+	inst.mDemoSelectorSelector = config.NewInjectionSelector("${demo.selector}",nil)
+	inst.mDemo1Selector = config.NewInjectionSelector("#demo1",nil)
+	inst.mDemo2Selector = config.NewInjectionSelector("#demo2",nil)
+	inst.mDemo3Selector = config.NewInjectionSelector("#demo3",nil)
 
 
 	inst.mPrototype = inst.newObject()
     return inst
 }
 
-func (inst * comFactory4pComDemo2) newObject() * demo0xbcc745.Demo2 {
-	return & demo0xbcc745.Demo2 {}
+func (inst * comFactory4pComDemoRunner) newObject() * demo0xbcc745.DemoRunner {
+	return & demo0xbcc745.DemoRunner {}
 }
 
-func (inst * comFactory4pComDemo2) castObject(instance application.ComponentInstance) * demo0xbcc745.Demo2 {
-	return instance.Get().(*demo0xbcc745.Demo2)
+func (inst * comFactory4pComDemoRunner) castObject(instance application.ComponentInstance) * demo0xbcc745.DemoRunner {
+	return instance.Get().(*demo0xbcc745.DemoRunner)
 }
 
-func (inst * comFactory4pComDemo2) GetPrototype() lang.Object {
+func (inst * comFactory4pComDemoRunner) GetPrototype() lang.Object {
 	return inst.mPrototype
 }
 
-func (inst * comFactory4pComDemo2) NewInstance() application.ComponentInstance {
+func (inst * comFactory4pComDemoRunner) NewInstance() application.ComponentInstance {
 	return config.SimpleInstance(inst, inst.newObject())
 }
 
-func (inst * comFactory4pComDemo2) AfterService() application.ComponentAfterService {
+func (inst * comFactory4pComDemoRunner) AfterService() application.ComponentAfterService {
 	return inst
 }
 
-func (inst * comFactory4pComDemo2) Init(instance application.ComponentInstance) error {
+func (inst * comFactory4pComDemoRunner) Init(instance application.ComponentInstance) error {
 	return nil
 }
 
-func (inst * comFactory4pComDemo2) Destroy(instance application.ComponentInstance) error {
+func (inst * comFactory4pComDemoRunner) Destroy(instance application.ComponentInstance) error {
 	return nil
 }
 
-func (inst * comFactory4pComDemo2) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
+func (inst * comFactory4pComDemoRunner) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
 	
 	obj := inst.castObject(instance)
-	obj.DemoBuckets = inst.getterForFieldDemoBucketsSelector(context)
-	obj.CredentialFileName = inst.getterForFieldCredentialFileNameSelector(context)
-	obj.Context = inst.getterForFieldContextSelector(context)
-	obj.BM = inst.getterForFieldBMSelector(context)
+	obj.DemoSelector = inst.getterForFieldDemoSelectorSelector(context)
+	obj.Demo1 = inst.getterForFieldDemo1Selector(context)
+	obj.Demo2 = inst.getterForFieldDemo2Selector(context)
+	obj.Demo3 = inst.getterForFieldDemo3Selector(context)
 	return context.LastError()
 }
 
-//getterForFieldDemoBucketsSelector
-func (inst * comFactory4pComDemo2) getterForFieldDemoBucketsSelector (context application.InstanceContext) string {
-    return inst.mDemoBucketsSelector.GetString(context)
+//getterForFieldDemoSelectorSelector
+func (inst * comFactory4pComDemoRunner) getterForFieldDemoSelectorSelector (context application.InstanceContext) string {
+    return inst.mDemoSelectorSelector.GetString(context)
 }
 
-//getterForFieldCredentialFileNameSelector
-func (inst * comFactory4pComDemo2) getterForFieldCredentialFileNameSelector (context application.InstanceContext) string {
-    return inst.mCredentialFileNameSelector.GetString(context)
-}
+//getterForFieldDemo1Selector
+func (inst * comFactory4pComDemoRunner) getterForFieldDemo1Selector (context application.InstanceContext) *demo0xbcc745.Demo1 {
 
-//getterForFieldContextSelector
-func (inst * comFactory4pComDemo2) getterForFieldContextSelector (context application.InstanceContext) application.Context {
-    return context.Context()
-}
-
-//getterForFieldBMSelector
-func (inst * comFactory4pComDemo2) getterForFieldBMSelector (context application.InstanceContext) buckets0xc61cfb.Manager {
-
-	o1 := inst.mBMSelector.GetOne(context)
-	o2, ok := o1.(buckets0xc61cfb.Manager)
+	o1 := inst.mDemo1Selector.GetOne(context)
+	o2, ok := o1.(*demo0xbcc745.Demo1)
 	if !ok {
 		eb := &util.ErrorBuilder{}
 		eb.Message("bad cast")
-		eb.Set("com", "demo2")
-		eb.Set("field", "BM")
+		eb.Set("com", "com4-demo0xbcc745.DemoRunner")
+		eb.Set("field", "Demo1")
 		eb.Set("type1", "?")
-		eb.Set("type2", "buckets0xc61cfb.Manager")
+		eb.Set("type2", "*demo0xbcc745.Demo1")
+		context.HandleError(eb.Create())
+		return nil
+	}
+	return o2
+}
+
+//getterForFieldDemo2Selector
+func (inst * comFactory4pComDemoRunner) getterForFieldDemo2Selector (context application.InstanceContext) *demo0xbcc745.Demo2 {
+
+	o1 := inst.mDemo2Selector.GetOne(context)
+	o2, ok := o1.(*demo0xbcc745.Demo2)
+	if !ok {
+		eb := &util.ErrorBuilder{}
+		eb.Message("bad cast")
+		eb.Set("com", "com4-demo0xbcc745.DemoRunner")
+		eb.Set("field", "Demo2")
+		eb.Set("type1", "?")
+		eb.Set("type2", "*demo0xbcc745.Demo2")
+		context.HandleError(eb.Create())
+		return nil
+	}
+	return o2
+}
+
+//getterForFieldDemo3Selector
+func (inst * comFactory4pComDemoRunner) getterForFieldDemo3Selector (context application.InstanceContext) *demo0xbcc745.Demo3 {
+
+	o1 := inst.mDemo3Selector.GetOne(context)
+	o2, ok := o1.(*demo0xbcc745.Demo3)
+	if !ok {
+		eb := &util.ErrorBuilder{}
+		eb.Message("bad cast")
+		eb.Set("com", "com4-demo0xbcc745.DemoRunner")
+		eb.Set("field", "Demo3")
+		eb.Set("type1", "?")
+		eb.Set("type2", "*demo0xbcc745.Demo3")
 		context.HandleError(eb.Create())
 		return nil
 	}

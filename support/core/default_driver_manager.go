@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/bitwormhole/starter-object-bucket/buckets"
+	"github.com/bitwormhole/starter/collection"
 	"github.com/bitwormhole/starter/markup"
 )
 
@@ -79,3 +80,49 @@ func (inst *DefaultBucketDriverManager) FindDriver(name string) (buckets.Driver,
 	}
 	return nil, errors.New("no bucket driver with name: " + name)
 }
+
+// OpenBucket ...
+func (inst *DefaultBucketDriverManager) OpenBucket(b *buckets.Bucket) (buckets.Connection, error) {
+	driver, err := inst.FindDriver(b.Provider)
+	if err != nil {
+		return nil, err
+	}
+	return driver.GetConnector().Open(b)
+}
+
+// GetBucket ...
+func (inst *DefaultBucketDriverManager) GetBucket(tag, id string, p collection.Properties) (*buckets.Bucket, error) {
+
+	if tag == "" {
+		tag = "bucket"
+	}
+
+	if id == "" {
+		id = "default"
+	}
+
+	driverKey := tag + "." + id + ".driver"
+	driverValue, err := p.GetPropertyRequired(driverKey)
+	if err != nil {
+		return nil, err
+	}
+
+	driver, err := inst.FindDriver(driverValue)
+	if err != nil {
+		return nil, err
+	}
+
+	return driver.GetBucket(tag, id, p)
+}
+
+// // ComputeDomainName ...
+// func (inst *DefaultBucketDriverManager) ComputeDomainName(b *buckets.Bucket, profile string) (string, error) {
+// 	driver := b.Driver
+// 	if driver == nil {
+// 		drv, err := inst.FindDriver(b.Provider)
+// 		if err != nil {
+// 			return "", err
+// 		}
+// 		driver = drv
+// 	}
+// }

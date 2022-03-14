@@ -101,7 +101,7 @@ func (inst *Demo1) Loop() error {
 
 func (inst *Demo1) testBucket(b *buckets.Bucket) error {
 
-	driver, err := inst.BM.FindDriver(b.Driver)
+	driver, err := inst.BM.FindDriver(b.Provider)
 	if err != nil {
 		return err
 	}
@@ -194,7 +194,7 @@ func (inst *Demo1) loadBuckets() ([]*buckets.Bucket, error) {
 	dst := make([]*buckets.Bucket, 0)
 	items := strings.Split(inst.DemoBuckets, ",")
 	for _, item := range items {
-		b, err := inst.loadBucketWithName(item)
+		b, err := inst.loadBucketWithID(item)
 		if err != nil {
 			return nil, err
 		}
@@ -203,16 +203,16 @@ func (inst *Demo1) loadBuckets() ([]*buckets.Bucket, error) {
 	return dst, nil
 }
 
-func (inst *Demo1) loadBucketWithName(name string) (*buckets.Bucket, error) {
+func (inst *Demo1) loadBucketWithID(id string) (*buckets.Bucket, error) {
 
-	name = strings.TrimSpace(name)
+	id = strings.TrimSpace(id)
 
 	b := &buckets.Bucket{}
-	p := "bucket." + name + "."
+	p := "bucket." + id + "."
 	getter := inst.Context.GetProperties().Getter()
 
-	b.Driver = getter.GetString(p+"driver", "")
-	b.ID = getter.GetString(p+"id", "")
+	b.Provider = getter.GetString(p+"driver", "")
+	b.ID = id
 
 	// b.User = getter.GetString(p+"user", "")
 	// b.Driver = getter.GetString("", "")

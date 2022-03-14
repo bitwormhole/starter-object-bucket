@@ -6,8 +6,6 @@ import (
 	"github.com/bitwormhole/starter-object-bucket/buckets"
 	"github.com/bitwormhole/starter-object-bucket/support/core"
 	"github.com/bitwormhole/starter/application"
-	"github.com/bitwormhole/starter/collection"
-	"github.com/bitwormhole/starter/io/fs"
 	"github.com/bitwormhole/starter/markup"
 	"github.com/bitwormhole/starter/vlog"
 )
@@ -16,10 +14,12 @@ import (
 type Demo2 struct {
 	markup.Component `id:"demo2"`
 
-	DemoBuckets        string              `inject:"${demo.buckets}"`
-	CredentialFileName string              `inject:"${demo.credential.properties}"`
-	Context            application.Context `inject:"context"`
-	BM                 buckets.Manager     `inject:"#buckets.Manager"`
+	// CredentialFileName string              `inject:"${demo.credential.properties}"`
+	// Context            application.Context `inject:"context"`
+
+	DemoBuckets  string          `inject:"${demo.buckets}"`
+	BM           buckets.Manager `inject:"#buckets.Manager"`
+	BucketLoader *BucketLoader   `inject:"#BucketLoader"`
 
 	exampleFileName  string
 	exampleFileLocal core.TempFile
@@ -39,13 +39,11 @@ func (inst *Demo2) GetLifeRegistration() *application.LifeRegistration {
 
 // Init ...
 func (inst *Demo2) Init() error {
-
 	err := inst.initExampleData()
 	if err != nil {
 		return err
 	}
-
-	return inst.load()
+	return nil
 }
 
 func (inst *Demo2) initExampleData() error {
@@ -58,24 +56,6 @@ func (inst *Demo2) initExampleData() error {
 	mk := ExampleFileMaker{}
 	mk.Init(1024*1024*32, "hello")
 	return mk.Make(tmp.GetPath())
-}
-
-func (inst *Demo2) load() error {
-
-	file := fs.Default().GetPath(inst.CredentialFileName)
-	text, err := file.GetIO().ReadText(nil)
-	if err != nil {
-		return err
-	}
-
-	src, err := collection.ParseProperties(text, nil)
-	if err != nil {
-		return err
-	}
-
-	dst := inst.Context.GetProperties()
-	dst.Import(src.Export(nil))
-	return nil
 }
 
 // Loop ...
@@ -100,18 +80,7 @@ func (inst *Demo2) Loop() error {
 
 func (inst *Demo2) testBucket(b *buckets.Bucket) error {
 
-	driver, err := inst.BM.FindDriver(b.Driver)
-	if err != nil {
-		return err
-	}
-
-	p := inst.Context.GetProperties()
-	b, err = driver.GetBucket("bucket", b.ID, p)
-	if err != nil {
-		return err
-	}
-
-	conn, err := driver.GetConnector().Open(b)
+	conn, err := inst.BucketLoader.OpenBucket(b.ID)
 	if err != nil {
 		return err
 	}
@@ -157,23 +126,5 @@ func (inst *Demo2) loadBuckets() ([]*buckets.Bucket, error) {
 }
 
 func (inst *Demo2) loadBucketWithName(name string) (*buckets.Bucket, error) {
-
-	name = strings.TrimSpace(name)
-
-	b := &buckets.Bucket{}
-	p := "bucket." + name + "."
-	getter := inst.Context.GetProperties().Getter()
-
-	b.Driver = getter.GetString(p+"driver", "")
-	b.ID = getter.GetString(p+"id", "")
-
-	// b.User = getter.GetString(p+"user", "")
-	// b.Driver = getter.GetString("", "")
-	// b.Driver = getter.GetString("", "")
-
-	err := getter.Error()
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
+	return inst.BucketLoader.GetBucket(name)
 }

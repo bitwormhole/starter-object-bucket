@@ -13,27 +13,17 @@ import (
 	markup0x23084a "github.com/bitwormhole/starter/markup"
 )
 
-type pComOBSDriver struct {
-	instance *huawei0xcc0ad2.OBSDriver
-	 markup0x23084a.Component `class:"buckets.Driver" initMethod:"Init"`
-}
-
-
-type pComCOSDriver struct {
-	instance *qq0x13bfdf.COSDriver
-	 markup0x23084a.Component `class:"buckets.Driver" initMethod:"Init"`
-}
-
-
 type pComOSSDriver struct {
 	instance *aliyun0x8a6680.OSSDriver
 	 markup0x23084a.Component `class:"buckets.Driver" initMethod:"Init"`
+	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
 }
 
 
 type pComBOSDriver struct {
 	instance *baidu0xa9ed2f.BOSDriver
 	 markup0x23084a.Component `class:"buckets.Driver" initMethod:"Init"`
+	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
 }
 
 
@@ -41,5 +31,19 @@ type pComDefaultBucketDriverManager struct {
 	instance *core0xd5361e.DefaultBucketDriverManager
 	 markup0x23084a.Component `id:"buckets.Manager"`
 	DriverSources []buckets0xc61cfb.DriverRegistry `inject:".buckets.Driver"`
+}
+
+
+type pComOBSDriver struct {
+	instance *huawei0xcc0ad2.OBSDriver
+	 markup0x23084a.Component `class:"buckets.Driver" initMethod:"Init"`
+	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
+}
+
+
+type pComCOSDriver struct {
+	instance *qq0x13bfdf.COSDriver
+	 markup0x23084a.Component `class:"buckets.Driver" initMethod:"Init"`
+	BM buckets0xc61cfb.Manager `inject:"#buckets.Manager"`
 }
 
