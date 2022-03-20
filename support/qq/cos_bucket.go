@@ -21,10 +21,11 @@ const (
 	pBucketURL  = "bucket-url"
 	pServiceURL = "service-url"
 
-	pBucketEndpoint = "endpoint"
-	pBucketName     = "bucket"
-	pBucketAK       = "access-key-id"
-	pBucketSK       = "access-key-secret"
+	// pBucketEndpoint = "dn-endpoint"
+	// pBucketName     = "dn-bucket"
+
+	pBucketAK = "access-key-id"
+	pBucketSK = "access-key-secret"
 )
 
 // 对象大小界限
@@ -71,7 +72,7 @@ func (inst *cosBucket) init(b *buckets.Bucket) error {
 	sk := ext[pBucketSK]
 	bucketURL := ext[pBucketURL]
 	serviceURL := ext[pServiceURL]
-	bName := ext[pBucketName]
+	bucketName := ext[core.ParamBucketName]
 
 	bu, _ := url.Parse(bucketURL)
 	su, _ := url.Parse(serviceURL)
@@ -86,7 +87,7 @@ func (inst *cosBucket) init(b *buckets.Bucket) error {
 	}
 	client := cos.NewClient(baseURL, httpclient)
 
-	inst.bucketName = bName
+	inst.bucketName = bucketName
 	inst.client = client
 	inst.fetchBaseURL = "https://" + b.BucketDN
 

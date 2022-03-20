@@ -14,10 +14,12 @@ import (
 
 // bucket 参数
 const (
-	pBucketEndpoint = "endpoint"
-	pBucketName     = "bucket"
-	pBucketAK       = "access-key-id"
-	pBucketSK       = "access-key-secret"
+
+	// pBucketEndpoint = "dn-endpoint"
+	// pBucketName     = "dn-bucket"
+
+	pBucketAK = "access-key-id"
+	pBucketSK = "access-key-secret"
 )
 
 // 对象大小界限
@@ -42,8 +44,8 @@ func (inst *bosBucket) init(b *buckets.Bucket) error {
 	ext := b.Ext
 	ak := ext[pBucketAK]
 	sk := ext[pBucketSK]
-	endpoint := ext[pBucketEndpoint]
-	bName := ext[pBucketName]
+	endpoint := ext[core.ParamEndpointDN]
+	bucketName := ext[core.ParamBucketName]
 
 	clientConfig := bos.BosClientConfiguration{
 		Ak:               ak,
@@ -57,7 +59,7 @@ func (inst *bosBucket) init(b *buckets.Bucket) error {
 		return err
 	}
 
-	inst.bucketName = bName
+	inst.bucketName = bucketName
 	inst.client = bosClient
 	return nil
 }

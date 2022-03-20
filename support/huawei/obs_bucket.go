@@ -1,8 +1,8 @@
 package huawei
 
 import (
-	"errors"
 	"io/ioutil"
+	"net/http"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-obs/obs"
 
@@ -14,10 +14,11 @@ import (
 
 // bucket 参数
 const (
-	pBucketEndpoint = "endpoint"
-	pBucketName     = "bucket"
-	pBucketAK       = "access-key-id"
-	pBucketSK       = "access-key-secret"
+	// pBucketEndpoint = "dn-endpoint"
+	// pBucketName     = "dn-bucket"
+
+	pBucketAK = "access-key-id"
+	pBucketSK = "access-key-secret"
 )
 
 // 对象大小界限
@@ -42,15 +43,15 @@ func (inst *obsBucket) init(b *buckets.Bucket) error {
 	ext := b.Ext
 	ak := ext[pBucketAK]
 	sk := ext[pBucketSK]
-	endpoint := ext[pBucketEndpoint]
-	bName := ext[pBucketName]
+	endpoint := ext[core.ParamEndpointDN]
+	bucketName := ext[core.ParamBucketName]
 
 	client, err := obs.New(ak, sk, endpoint)
 	if err != nil {
 		return err
 	}
 
-	inst.bucketName = bName
+	inst.bucketName = bucketName
 	inst.client = client
 	return nil
 }
@@ -81,10 +82,6 @@ func (inst *obsBucket) GetBucketName() string {
 	return inst.bucketName
 }
 
-// func (inst *obsBucket) GetDomainName(p buckets.Profile) (string, error) {
-// 	return "", errors.New("no impl")
-// }
-
 ////////////////////////////////////////////////////////////////////////////////
 
 type obsObject struct {
@@ -97,15 +94,44 @@ func (inst *obsObject) _Impl() buckets.Object {
 }
 
 func (inst *obsObject) Exists() (bool, error) {
-	return false, errors.New("no impl")
+
+	input := &obs.GetBucketMetadataInput{}
+	input.Bucket = inst.parent.bucketName
+
+	client := inst.parent.client
+	out, err := client.GetBucketMetadata(input)
+	if err != nil {
+		return false, err
+	}
+
+	if out.StatusCode != http.StatusOK {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 func (inst *obsObject) GetDownloadURL() string {
-	return ""
+	panic("no impl")
 }
 
 func (inst *obsObject) GetMeta() (*buckets.ObjectMeta, error) {
-	return nil, errors.New("no impl")
+
+	input := &obs.GetObjectMetadataInput{}
+	input.Bucket = inst.parent.bucketName
+	input.Key = inst.name
+
+	client := inst.parent.client
+	output, err := client.GetObjectMetadata(input)
+	if err != nil {
+		return nil, err
+	}
+
+	// todo ...
+	meta := &buckets.ObjectMeta{}
+	meta.ContentType = output.ContentType
+
+	return meta, nil
 }
 
 func (inst *obsObject) GetName() string {
@@ -113,11 +139,18 @@ func (inst *obsObject) GetName() string {
 }
 
 func (inst *obsObject) GetEntity() (buckets.ObjectEntity, error) {
-	return nil, errors.New("no impl")
+	panic("no impl")
 }
 
 func (inst *obsObject) UpdateMeta(meta *buckets.ObjectMeta) error {
-	return errors.New("no impl")
+
+	// todo ...
+	input := &obs.SetObjectMetadataInput{}
+	input.ContentType = meta.ContentType
+
+	client := inst.parent.client
+	_, err := client.SetObjectMetadata(input)
+	return err
 }
 
 func (inst *obsObject) PutEntity(entity buckets.ObjectEntity, meta *buckets.ObjectMeta) error {
@@ -175,7 +208,7 @@ func (inst *obsObject) getUploader(entity buckets.ObjectEntity) uploader {
 }
 
 func (inst *obsObject) UploadByAPI(up *buckets.HTTPUploading) (*buckets.HTTPUploading, error) {
-	return nil, errors.New("no impl")
+	panic("no impl")
 }
 
 ////////////////////////////////////////////////////////////////////////////////

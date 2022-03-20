@@ -41,7 +41,7 @@ func (inst *COSDriver) ListDrivers() []*buckets.DriverRegistration {
 // GetBucket ...
 func (inst *COSDriver) GetBucket(tag, id string, p collection.Properties) (*buckets.Bucket, error) {
 	ldr := core.BucketLoader{}
-	ldr.WantBucketExt = []string{pBucketEndpoint, pBucketName, pServiceURL, pBucketURL}
+	ldr.WantBucketExt = []string{pServiceURL, pBucketURL}
 	ldr.WantCredentialExt = []string{pBucketAK, pBucketSK}
 	return ldr.Load(tag, id, p)
 }

@@ -20,8 +20,8 @@ const (
 
 	// for 桶
 
-	pBucketEndpoint = "ext-bucket-endpoint"
-	pBucketName     = "ext-bucket-name"
+	// pBucketEndpoint = "ext-bucket-endpoint"
+	// pBucketName     = "ext-bucket-name"
 
 	// for 凭证
 

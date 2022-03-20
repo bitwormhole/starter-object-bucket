@@ -42,7 +42,7 @@ func (inst *BOSDriver) ListDrivers() []*buckets.DriverRegistration {
 // GetBucket ...
 func (inst *BOSDriver) GetBucket(tag, name string, p collection.Properties) (*buckets.Bucket, error) {
 	ldr := core.BucketLoader{}
-	ldr.WantBucketExt = []string{pBucketEndpoint, pBucketName}
+	ldr.WantBucketExt = []string{}
 	ldr.WantCredentialExt = []string{pBucketAK, pBucketSK}
 	return ldr.Load(tag, name, p)
 }
