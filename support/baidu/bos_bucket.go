@@ -3,6 +3,7 @@ package baidu
 import (
 	"errors"
 	"io/ioutil"
+	"strings"
 
 	"github.com/baidubce/bce-sdk-go/services/bos"
 	"github.com/bitwormhole/starter-object-bucket/buckets"
@@ -31,8 +32,9 @@ const (
 ////////////////////////////////////////////////////////////////////////////////
 
 type bosBucket struct {
-	client     *bos.Client
-	bucketName string // the bucket name
+	client           *bos.Client
+	bucketName       string // the bucket name
+	bucketDomainName string // the bucket DN
 }
 
 func (inst *bosBucket) _Impl() buckets.Connection {
@@ -45,6 +47,7 @@ func (inst *bosBucket) init(b *buckets.Bucket) error {
 	ak := ext[pBucketAK]
 	sk := ext[pBucketSK]
 	endpoint := ext[core.ParamEndpointDN]
+	bucketDN := ext[core.ParamBucketDN]
 	bucketName := ext[core.ParamBucketName]
 
 	clientConfig := bos.BosClientConfiguration{
@@ -59,6 +62,7 @@ func (inst *bosBucket) init(b *buckets.Bucket) error {
 		return err
 	}
 
+	inst.bucketDomainName = bucketDN
 	inst.bucketName = bucketName
 	inst.client = bosClient
 	return nil
@@ -91,10 +95,6 @@ func (inst *bosBucket) GetBucketName() string {
 	return inst.bucketName
 }
 
-// func (inst *bosBucket) GetDomainName(p buckets.Profile) (string, error) {
-// 	return "", errors.New("no impl")
-// }
-
 ////////////////////////////////////////////////////////////////////////////////
 
 type bosObject struct {
@@ -107,15 +107,39 @@ func (inst *bosObject) _Impl() buckets.Object {
 }
 
 func (inst *bosObject) Exists() (bool, error) {
-	return false, errors.New("no impl")
+	bucket := inst.parent.bucketName
+	obj := inst.name
+	client := inst.parent.client
+	res, err := client.GetObjectMeta(bucket, obj)
+	if err != nil {
+		return false, err
+	}
+	ct := res.ContentType
+	ok := len(ct) > 0
+	return ok, nil
 }
 
 func (inst *bosObject) GetDownloadURL() string {
-	return ""
+	p1 := inst.parent.bucketDomainName
+	p2 := inst.name
+	if !strings.HasPrefix(p2, "/") {
+		p2 = "/" + p2
+	}
+	return "https://" + p1 + p2
 }
 
 func (inst *bosObject) GetMeta() (*buckets.ObjectMeta, error) {
-	return nil, errors.New("no impl")
+	bucket := inst.parent.bucketName
+	obj := inst.name
+	client := inst.parent.client
+	m1, err := client.GetObjectMeta(bucket, obj)
+	if err != nil {
+		return nil, err
+	}
+	// todo ...
+	m2 := &buckets.ObjectMeta{}
+	m2.ContentType = m1.ContentType
+	return m2, nil
 }
 
 func (inst *bosObject) GetName() string {
@@ -127,6 +151,7 @@ func (inst *bosObject) GetEntity() (buckets.ObjectEntity, error) {
 }
 
 func (inst *bosObject) UpdateMeta(meta *buckets.ObjectMeta) error {
+
 	return errors.New("no impl")
 }
 

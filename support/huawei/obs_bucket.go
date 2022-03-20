@@ -3,6 +3,7 @@ package huawei
 import (
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-obs/obs"
 
@@ -30,8 +31,9 @@ const (
 ////////////////////////////////////////////////////////////////////////////////
 
 type obsBucket struct {
-	client     *obs.ObsClient
-	bucketName string // the bucket name
+	client           *obs.ObsClient
+	bucketName       string // the bucket name
+	bucketDomainName string
 }
 
 func (inst *obsBucket) _Impl() buckets.Connection {
@@ -44,6 +46,7 @@ func (inst *obsBucket) init(b *buckets.Bucket) error {
 	ak := ext[pBucketAK]
 	sk := ext[pBucketSK]
 	endpoint := ext[core.ParamEndpointDN]
+	bucketDN := ext[core.ParamBucketDN]
 	bucketName := ext[core.ParamBucketName]
 
 	client, err := obs.New(ak, sk, endpoint)
@@ -52,6 +55,7 @@ func (inst *obsBucket) init(b *buckets.Bucket) error {
 	}
 
 	inst.bucketName = bucketName
+	inst.bucketDomainName = bucketDN
 	inst.client = client
 	return nil
 }
@@ -95,11 +99,12 @@ func (inst *obsObject) _Impl() buckets.Object {
 
 func (inst *obsObject) Exists() (bool, error) {
 
-	input := &obs.GetBucketMetadataInput{}
+	input := &obs.GetObjectMetadataInput{}
 	input.Bucket = inst.parent.bucketName
+	input.Key = inst.name
 
 	client := inst.parent.client
-	out, err := client.GetBucketMetadata(input)
+	out, err := client.GetObjectMetadata(input)
 	if err != nil {
 		return false, err
 	}
@@ -107,12 +112,16 @@ func (inst *obsObject) Exists() (bool, error) {
 	if out.StatusCode != http.StatusOK {
 		return false, nil
 	}
-
 	return true, nil
 }
 
 func (inst *obsObject) GetDownloadURL() string {
-	panic("no impl")
+	p1 := inst.parent.bucketDomainName
+	p2 := inst.name
+	if !strings.HasPrefix(p2, "/") {
+		p2 = "/" + p2
+	}
+	return "https://" + p1 + p2
 }
 
 func (inst *obsObject) GetMeta() (*buckets.ObjectMeta, error) {

@@ -115,17 +115,8 @@ func (inst *ossBucketConnection) Close() error {
 }
 
 func (inst *ossBucketConnection) Check() error {
-
-	// name := inst.bucketName
-	// ext, err := inst.client.IsBucketExist(name)
-	// if err != nil {
-	// 	return err
-	// }
-	// if !ext {
-	// 	return errors.New("the bucket is not exists, name:" + name)
-	// }
-
-	return nil
+	_, err := inst.bucket.IsObjectExist(".test/IsObjectExist")
+	return err
 }
 
 func (inst *ossBucketConnection) GetObject(name string) buckets.Object {
@@ -139,10 +130,6 @@ func (inst *ossBucketConnection) GetObject(name string) buckets.Object {
 func (inst *ossBucketConnection) GetBucketName() string {
 	return inst.bucketName
 }
-
-// func (inst *ossBucketConnection) GetDomainName(p buckets.Profile) (string, error) {
-// 	return inst.dnSet.GetDN(p)
-// }
 
 ////////////////////////////////////////////////////////////////////////////////
 
