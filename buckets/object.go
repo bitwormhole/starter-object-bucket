@@ -28,6 +28,7 @@ type HTTPUploading struct {
 	ContentType    string
 	ContentLength  int64
 	ContentMD5     util.Hex
+	MaxAge         int64 // in seconds
 	RequestHeaders map[string]string
 }
 

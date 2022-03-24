@@ -268,6 +268,7 @@ func (inst *ossObject) UploadByAPI(up1 *buckets.HTTPUploading) (*buckets.HTTPUpl
 	contentType := up2.ContentType
 	md5sum := up2.ContentMD5.String()
 	length := up2.ContentLength
+	maxAge := up2.MaxAge
 	dn := inst.parent.bucketDN
 
 	if length < 0 {
@@ -291,8 +292,12 @@ func (inst *ossObject) UploadByAPI(up1 *buckets.HTTPUploading) (*buckets.HTTPUpl
 		options = append(options, oss.ContentLength(length))
 	}
 
+	if maxAge < 1 {
+		maxAge = 5 * 60
+	}
+
 	// 生成 URL
-	url1, err := inst.parent.bucket.SignURL(path, oss.HTTPPut, 60, options...)
+	url1, err := inst.parent.bucket.SignURL(path, oss.HTTPPut, maxAge, options...)
 	if err != nil {
 		return nil, err
 	}
